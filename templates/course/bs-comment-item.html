@@ -1,0 +1,49 @@
+{% load comment_tags %}
+<div class="card border-0 mt-3 mb-4">
+  <div class="card-body p-0">
+      <h6 class="card-title">
+          <img src="{{ comment.user.avatar_url }}" alt="" class="user-avatar mr-2 rounded">
+          {{ comment.user }}
+{#          <small>{{ comment.created }}</small>#}
+          <small>
+              {{ comment.created }}
+               {% if comment.parent %}
+                   <a href="#">@{{ comment.parent.user }}</a>
+               {% endif %}
+          </small>
+      </h6>
+      <p class="card-text">{{ comment.content|markdown }}</p>
+      {% if comment.parent %}
+          <blockquote class="blockquote">
+            <h6 class="mb-0 card-subtitle text-muted">{{ comment.parent.content|markdown }}</h6>
+            <footer class="blockquote-footer">来自 <cite title="Source Title">{{ comment.parent.user }}</cite></footer>
+          </blockquote>
+      {% endif %}
+      {% if request.user.is_authenticated %}
+            {% check_is_liked request.user comment as is_liked %}
+            <button type="button"
+                    data-cid="{{ comment.id }}"
+                    data-action="{% if is_liked %}un{% endif %}like"
+                    class="card-link btn btn-outline-danger btn-sm like">
+                <span class="like-heart">
+                    {% if is_liked %}
+                        <i class="fa fa-heart" aria-hidden="true"></i>
+                    {% else %}
+                        <i class="fa fa-heart-o" aria-hidden="true"></i>
+                    {% endif %}
+                </span>
+                喜欢
+                <span class="like-count">{{ comment.like_number }}</span>
+            </button>
+          <button type="button" class="card-link btn btn-outline-danger btn-sm"
+                    data-pid="{{ comment.id }}"
+                    data-vid="{{ comment.video.id }}"
+                    data-toggle="modal"
+                    data-target="#review-modal"
+                    data-action="写回答 @{{ comment.user }}">
+                <i class="fa fa-pencil" aria-hidden="true"></i> 写回答
+            </button>
+      {% endif %}
+  </div>
+</div>
+

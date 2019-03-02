@@ -1,0 +1,260 @@
+{% extends 'bs-base.html' %}
+
+{% load static %}
+
+{% block title %}
+    创作习题
+{% endblock %}
+
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="{% url 'courses:course-list' %}">课程</a></li>
+          <li class="breadcrumb-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+          <li class="breadcrumb-item">
+              第 {{ chapter_number }} 章 习题
+          </li>
+      </ol>
+    </nav>
+    <h6 class="border-bottom border-gray pb-2 mb-0">一、创作选择题（单选）</h6>
+    <div class="card border-0">
+        <div class="card-body pl-0">
+          <div class="card-subtitle">
+              <div class="form-group row">
+                  <label for="sc-title" class="col-form-label col-md-1">题目</label>
+                  <textarea class="form-control col-md-11" id="sc-title" rows="2"></textarea>
+              </div>
+               <div class="form-group row">
+                    <label for="sc-a" class="col-form-label col-md-1">A</label>
+                    <textarea class="form-control col-md-11" id="sc-a" rows="2"></textarea>
+                </div>
+                <div class="form-group row">
+                    <label for="sc-b" class="col-form-label col-md-1">B</label>
+                    <textarea class="form-control col-md-11" id="sc-b" rows="2"></textarea>
+                </div>
+                <div class="form-group row">
+                    <label for="sc-c" class="col-form-label col-md-1">C</label>
+                    <textarea class="form-control col-md-11" id="sc-c" rows="2"></textarea>
+                </div>
+                <div class="form-group row">
+                    <label for="sc-d" class="col-form-label col-md-1">D</label>
+                    <textarea class="form-control col-md-11" id="sc-d" rows="2"></textarea>
+                </div>
+                <div class="form-group row">
+                    <label for="sc-answer" class="col-form-label col-md-1">答案</label>
+                    <select class="custom-select col-md-11" id="sc-answer">
+                        <option value="A">选项A</option>
+                        <option value="B">选项B</option>
+                        <option value="C">选项C</option>
+                        <option value="D">选项D</option>
+                    </select>
+                </div>
+              <div class="form-group row">
+                <label for="img-file" class="col-form-label col-md-2">图片(可选项)</label>
+                <input type="file" class="form-control-file col-md-10" id="img-file" accept="image/*">
+            </div>
+          </div>
+{#          <p class="card-text">#}
+{#              <form>#}
+{#               #}
+{#            </form>#}
+            <span class="card-link text-danger">
+                 发布后，所有订阅者都可以作答。
+             </span>
+             <button type="button"
+                 data-type="sc"
+                 data-chnum="{{ chapter_number }}"
+                 data-cid="{{ course.id }}"
+                 class="card-link btn btn-outline-success float-right send-sc">
+                 <i class="fa fa-paper-plane-o" aria-hidden="true"></i> 发布
+             </button>
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block sidebar %}
+        <div class="sidebar">
+
+            <h6 class="border-bottom border-gray pb-2 mb-0">操作栏</h6>
+
+            <a role="button" href="{% url 'questionbanks:test-list' course.id chapter_number %}"
+               class="btn btn-outline-danger btn-block mt-3">未提交</a>
+            <a role="button" href="{% url 'questionbanks:test-list-submitted' course.id chapter_number %}"
+               class="btn btn-outline-success btn-block mt-3">已提交</a>
+            <a role="button" href="{% url 'questionbanks:create-exercises' course.id chapter_number %}"
+               class="btn btn-outline-info btn-block mt-3 active">创作习题</a>
+            <a role="button" href="{% url 'questionbanks:my-created' course.id chapter_number %}"
+                   class="btn btn-outline-info btn-block mt-3">我的创作</a>
+        </div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'upload/qiniu.min.js' %}"></script>
+    <script type="text/javascript">
+        $('button.send-sc').click(function () {
+            var $this = $(this);
+            var type = $this.data('type');
+            var chnum = $this.data('chnum');
+            var cid = $this.data('cid');
+            var scTitle = $.trim($('textarea#sc-title').val());
+            var scA = $.trim($('textarea#sc-a').val());
+            var scB = $.trim($('textarea#sc-b').val());
+            var scC = $.trim($('textarea#sc-c').val());
+            var scD = $.trim($('textarea#sc-d').val());
+            var scAnswer = $('select#sc-answer').val();
+
+            var isEmpty = scTitle == '' || scA == '' || scB == '' || scC == '' || scD == '';
+
+            if (isEmpty){
+                tips('表单都不能为空哦~', 'danger');
+                return false;
+            }
+
+            var datas = {
+                'type': type,
+                'chnum': chnum,
+                'cid': cid,
+                'scTitle': scTitle,
+                'scA': scA,
+                'scB': scB,
+                'scC': scC,
+                'scD': scD,
+                'scAnswer': scAnswer,
+                'url': null
+            };
+
+            var file = $("input#img-file")[0].files[0];
+
+            if (file !== null || file !== undefined){
+
+                var filename = file.name;
+
+                if (!/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(filename)){
+                    tips('请确认选择的是图片类型', 'danger');
+                    return false;
+                }
+
+                // 获取上传token
+                var data = get_token();
+
+                if (data.msg == 'ko'){
+                    tips('执行出错~，请稍后重试', 'danger');
+                    return false;
+                }
+
+                var token = data.token;
+                // 保存到七牛云的文件名
+                var key = "exercises/image/" + data.username + '/' + filename;
+                // 显示页面加载圈圈
+                pageLoader('show');
+                  // 上传到七牛云
+                uploadToQiNiu(file, key, token, datas);
+
+            } else {
+                $.ajax({
+                    cache: false,
+                    type: 'POST',
+                    url: '/test/send/exercises/',
+                    data: datas,
+                    async: true,
+                    success: function (data) {
+                        if (data['msg'] == 'ok'){
+                            tips('发布成功', 'success');
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                            return true;
+                        }else{
+                            tips('发布失败, 请检查后再次发布', 'danger');
+                            return false;
+                        }
+                    }
+                });
+            }
+        });
+
+        // 更新头像
+        function addTest(msg, key, datas) {
+            // 构建保存到服务器的avatar_url
+            if (msg === 'ko'){
+                pageLoader('hide');
+                tips('修改失败~, 请稍后重试', 'danger');
+                setTimeout(function () {
+                    location.reload();
+                }, 1500);
+            }
+            datas.url = key;
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/test/send/exercises/',
+                data: datas,
+                async: true,
+                success: function (data) {
+                    if (data['msg'] === 'ok'){
+                        tips('发布成功', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return true;
+                    }else{
+                        tips('发布失败, 请检查后再次发布', 'danger');
+                        return false;
+                    }
+                }
+            });
+        }
+
+        // 上传到七牛云
+        function uploadToQiNiu(file, key, token, datas) {
+            var putExtra = {
+                fname: "",
+                params: {},
+                mimeType: null
+            };
+            var config = {
+              useCdnDomain: true,
+              retryCount: 6,
+              region: qiniu.region.z0
+            };
+            var next = function () {
+                // 暂无相关操作, 原本是用来显示加载圈圈的
+            };
+            var error = function () {
+                pageLoader('hide');
+                subscription.unsubscribe();
+                addTest('ko', key, datas)
+            };
+            var complete = function (res) {
+                // 更新头像
+                addTest('ok', res.key, datas);
+            };
+            var observer = {
+                next: next,
+                error: error,
+                complete: complete
+            };
+
+            var observable = qiniu.upload(file, key, token, putExtra, config);
+            // 开始上传
+            var subscription = observable.subscribe(observer);
+        }
+        // 获取上传token
+        function get_token() {
+            var datas;
+            $.ajax({
+                type: 'GET',
+                url: '/course/upload/token/',
+                async : false, // 一定要设置为false 不然返回不了data
+                success: function (data) {
+                    datas =  data;
+                }
+            });
+            return datas;
+        }
+    </script>
+{% endblock %}

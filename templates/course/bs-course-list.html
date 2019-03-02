@@ -1,0 +1,52 @@
+{% extends 'bs-base.html' %}
+
+{% load course_tags %}
+
+{% block title %}
+    课程列表
+{% endblock %}
+
+
+{% block content %}
+    <div class="course-list">
+        <h6 class="border-bottom border-gray pb-2 mb-0">最新课程</h6>
+        {% for course in object_list %}
+            <div class="d-flex align-items-center p-2 my-3 text-white-50 bg-light rounded ">
+                <div class="card border-0">
+                  <div class="card-body bg-light">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        创作者: <a href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
+                    </h6>
+                    <p class="card-text text-truncate">{{ course.overview }}</p>
+                    <span class="card-link">发布于: {{ course.created }}</span>
+                    <a href="{{ course.get_absolute_url }}" class="card-link">查看详情</a>
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
+
+{% block sidebar %}
+    <div class="sidebar">
+        <h6 class="border-bottom border-gray pb-2 mb-0">推荐课程</h6>
+        {% get_hot_course as hot_courses %}
+
+        {% for course in hot_courses %}
+            <div class="card border-0 mt-2">
+              <div class="card-body p-1">
+                <h5 class="card-title"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h5>
+                <h6 class="card-subtitle mb-2 mt-2 text-muted">
+                    创作者: <a href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
+                </h6>
+                <p class="card-text  pb-3 mb-0 border-bottom border-gray text-truncate">
+                    {{ course.overview }}
+                </p>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

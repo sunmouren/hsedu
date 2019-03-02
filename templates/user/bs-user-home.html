@@ -1,0 +1,76 @@
+{% extends 'bs-base.html' %}
+
+
+{% block title %}
+    个人主页 - {{ user }}
+{% endblock %}
+
+
+{% block content %}
+    {% if courses %}
+        <h6 class="border-bottom border-gray pb-2 mb-0">创作的课程 ({{ courses.count }})</h6>
+        {% for course in courses %}
+            <div class="d-flex align-items-center p-2 my-3 text-white-50 bg-light rounded ">
+                <div class="card border-0">
+                  <div class="card-body bg-light">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        创作者: <a href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
+                    </h6>
+                    <p class="card-text text-truncate">{{ course.overview }}</p>
+                    <span class="card-link">发布于: {{ course.created }}</span>
+                    <a target="_blank" href="{{ course.get_absolute_url }}" class="card-link">查看详情</a>
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% if subscribed_courses %}
+        <h6 class="border-bottom border-gray pb-2 mb-0">订阅的课程 ({{ subscribed_courses.count }})</h6>
+        {% for course in subscribed_courses %}
+            <div class="d-flex align-items-center p-2 my-3 text-white-50 bg-light rounded ">
+                <div class="card border-0">
+                  <div class="card-body bg-light">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                         创作者: <a href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
+                    </h6>
+                    <p class="card-text text-truncate">{{ course.overview }}</p>
+                    <span class="card-link">发布于: {{ course.created }}</span>
+                    <a target="_blank" href="{{ course.get_absolute_url }}" class="card-link">查看详情</a>
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+
+{% block sidebar %}
+    <div class="sidebar">
+        <h6 class="border-bottom border-gray pb-2 mb-3">
+            个人主页
+            {% ifequal user request.user %}
+                <small class="float-right"><a  href="{% url 'users:edit-profile' user.id %}"><i class="fa fa-edit"></i> 编辑资料</a></small>
+            {% endifequal %}
+        </h6>
+        <div class="media text-muted">
+            <img src="{{ user.avatar_url }}" alt="" class="user-avatar mr-2 rounded">
+            <div class="media-body pb-3 mb-0 small lh-125">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <strong class="text-gray-dark">账 号: {{ user.username }}</strong>
+                </div>
+                <span class="d-block">
+                    {% if user.nickname %}
+                        昵 称: {{ user.nickname }}
+                    {% else %}
+                        昵 称: 暂无
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        <h6 class="border-bottom border-gray pb-2 mt-2 mb-2">个性签名</h6>
+        <strong class="text-muted"> {{ user.signature }} </strong>
+
+    </div>
+{% endblock %}

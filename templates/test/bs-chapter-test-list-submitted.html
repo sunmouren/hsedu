@@ -1,0 +1,171 @@
+{% extends 'bs-base.html' %}
+
+{% block title %}
+    章节习题
+{% endblock %}
+
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="{% url 'courses:course-list' %}">课程</a></li>
+          <li class="breadcrumb-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+          <li class="breadcrumb-item">
+              第 {{ chapter_number }} 章 习题
+          </li>
+      </ol>
+    </nav>
+
+    <h6 class="border-bottom border-gray pb-2 mb-0">一、选择题（单选）</h6>
+
+    {% for answer in single_choice_answers %}
+        <div class="card border-0">
+            <div class="card-body pb-1">
+              <h6 class="card-title">{{ forloop.counter }}、{{ answer.single_choice.title }}</h6>
+                {% if answer.single_choice.img %}
+                    <img class="card-img-top" style="height: 250px; width: 100%" src="{{ answer.single_choice.img }}" alt="img">
+                {% endif %}
+              <div class="card-text mb-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" disabled>
+                    <label class="form-check-label">A、{{ answer.single_choice.option_a }}</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" disabled>
+                    <label class="form-check-label">B、{{ answer.single_choice.option_b }}</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" disabled>
+                    <label class="form-check-label">C、{{ answer.single_choice.option_c }}</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" disabled>
+                    <label class="form-check-label">D、{{ answer.single_choice.option_d }}</label>
+                </div>
+                {% if answer.note %}
+                    <small class="text-info"><i class="fa fa-pencil" aria-hidden="true"> 笔记 </i>: {{ answer.note }}</small>
+                {% endif %}
+              </div>
+                 <button type="button"
+                         class="card-link btn
+                         {% ifequal  answer.single_choice.answer answer.answer %}
+                            btn-outline-success
+                         {% else %}
+                            btn-outline-danger
+                         {% endifequal %} btn-sm" disabled>
+                    <span>正确答案: {{ answer.single_choice.answer }}</span>
+                    <span>您的作答: {{ answer.answer }}</span>
+                 </button>
+                 <button type="button"
+                         data-toggle="modal"
+                         data-target="#note-modal"
+                         data-type="sc"
+                         data-id="{{ answer.id }}"
+                         data-note="{{ answer.note }}"
+                         class="card-link btn btn-outline-info btn-sm">
+                     <i class="fa fa-pencil" aria-hidden="true"></i> 写笔记
+                 </button>
+            </div>
+        </div>
+    {% endfor %}
+     <!-- 写笔记modal -->
+    <div class="modal fade" id="note-modal" tabindex="-1" role="dialog" aria-labelledby="note-modal-title" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle"><i class="fa fa-pencil" aria-hidden="true"></i> 写笔记</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="review-form">
+                <div class="card border-0">
+                    <div class="card-body p-0">
+                        <p class="card-text">
+                            <textarea class="form-control note-content" rows="4"></textarea>
+                        </p>
+                        <a href="http://www.markdown.cn/" target="_blank" class="card-link">支持Markdown语法</a>
+                        <button data-type=""
+                                data-id=""
+                                class="card-link btn btn-outline-success float-right add-note">
+                                <i class="fa fa-floppy-o" aria-hidden="true"></i> 保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+        <div class="sidebar">
+
+                <h6 class="border-bottom border-gray pb-2 mb-0">操作栏</h6>
+                <a role="button" href="{% url 'questionbanks:test-list' course.id chapter_number %}"
+                   class="btn btn-outline-danger btn-block mt-3">未提交</a>
+                <a role="button" href="{% url 'questionbanks:test-list-submitted' course.id chapter_number %}"
+                   class="btn btn-outline-success btn-block mt-3 active">已提交</a>
+                <a role="button" href="{% url 'questionbanks:create-exercises' course.id chapter_number %}"
+                   class="btn btn-outline-info btn-block mt-3">创作习题</a>
+                <a role="button" href="{% url 'questionbanks:my-created' course.id chapter_number %}"
+                   class="btn btn-outline-info btn-block mt-3">我的创作</a>
+
+        </div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+        // 写笔记modal
+    $('#note-modal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var type = button.data('type');
+        var id = button.data('id');
+        var oldNote = $.trim(button.data('note'));
+        console.log(type);
+        console.log(id);
+        var modal = $(this);
+        var saveNoteBtn = modal.find('.modal-body button');
+        saveNoteBtn.data('type', type);
+        saveNoteBtn.data('id', id);
+        if ('None' != oldNote){
+            console.log(oldNote);
+             modal.find('.modal-body textarea').val(oldNote)
+        }
+    });
+
+    $('button.add-note').click(function () {
+        var $this = $(this);
+        var type = $this.data('type');
+        var id = $this.data('id');
+        var content = $.trim($('textarea.note-content').val());
+        console.log(type, id);
+
+        if (content == ''){
+            tips('笔记内容不能为空~', 'danger');
+            return false;
+        }
+
+        $.ajax({
+            cache: false,
+            type: 'POST',
+            url: '/test/add/note/',
+            data: {'id': id, 'type': type, 'content': content},
+            async: true,
+            success: function (data) {
+                if (data['msg'] == 'ok'){
+                    tips('保存成功', 'success');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                }else{
+                    tips('保存失败, 请检查后再次保存');
+                }
+            }
+        });
+    });
+    </script>
+{% endblock %}

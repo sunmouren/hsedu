@@ -1,0 +1,83 @@
+{% extends 'bs-base.html' %}
+
+
+{% block title %}
+    章节测试
+{% endblock %}
+
+
+{% block content %}
+     <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="{% url 'courses:course-list' %}">课程</a></li>
+          <li class="breadcrumb-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+          <li class="breadcrumb-item">
+              第 {{ chapter_number }} 章 习题
+          </li>
+      </ol>
+    </nav>
+    <h6 class="border-bottom border-gray pb-2 mb-0">一、选择题（单选）</h6>
+
+    {% for single_choice in single_choices %}
+        {% with single_choice.id as scid %}
+            <div class="card border-0" id="singlechoice-{{ scid }}">
+                <div class="card-body pb-1">
+                  <h6 class="card-title">{{ forloop.counter }}、{{ single_choice.title }}</h6>
+                  {% if single_choice.img %}
+                      <img class="card-img-top" style="height: 250px; width: 100%" src="{{ single_choice.img }}" alt="img">
+                  {% endif %}
+                  <div class="card-text mb-2">
+                      <div class="form-check">
+                      <input class="form-check-input sc{{ scid }}" type="radio"
+                             name="sc{{ scid }}" id="item-a-{{ scid }}" value="A">
+                      <label class="form-check-label" for="item-a-{{ scid }}">A、{{ single_choice.option_a }}</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input sc{{ scid }}" type="radio"
+                             name="sc{{ scid }}" id="item-b-{{ scid }}" value="B">
+                      <label class="form-check-label" for="item-b-{{ scid }}">B、{{ single_choice.option_b }}</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input sc{{ scid }}" type="radio"
+                             name="sc{{ scid }}" id="item-c-{{ scid }}" value="C">
+                      <label class="form-check-label" for="item-c-{{ scid }}">C、{{ single_choice.option_c }}</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input sc{{ scid }}" type="radio"
+                             name="sc{{ scid }}" id="item-d-{{ scid }}" value="D">
+                      <label class="form-check-label" for="item-d-{{ scid }}">D、{{ single_choice.option_d }}</label>
+                    </div>
+                  </div>
+                     {% if is_subscriber %}
+                         <button type="button"
+                             data-scid="{{ scid }}"
+                             class="card-link btn btn-outline-danger btn-sm sc-submit">提交
+                         </button>
+                     {% endif %}
+                </div>
+            </div>
+        {% endwith %}
+    {% empty %}
+         <p class="pt-2">暂无单选题</p>
+    {% endfor %}
+
+{% endblock %}
+
+{% block sidebar %}
+    {% if is_subscriber %}
+        <div class="sidebar">
+
+                <h6 class="border-bottom border-gray pb-2 mb-0">操作栏</h6>
+                <a role="button" href="{% url 'questionbanks:test-list' course.id chapter_number %}"
+                   class="btn btn-outline-danger btn-block mt-3 active">未提交</a>
+                <a role="button" href="{% url 'questionbanks:test-list-submitted' course.id chapter_number %}"
+                   class="btn btn-outline-success btn-block mt-3">已提交</a>
+                <a role="button" href="{% url 'questionbanks:create-exercises' course.id chapter_number %}"
+                   class="btn btn-outline-info btn-block mt-3">创作习题</a>
+                <a role="button" href="{% url 'questionbanks:my-created' course.id chapter_number %}"
+                   class="btn btn-outline-info btn-block mt-3">我的创作</a>
+
+        </div>
+    {% endif %}
+{% endblock %}
+

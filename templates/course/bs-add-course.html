@@ -1,0 +1,73 @@
+{% extends 'bs-base.html' %}
+
+
+{% block title %}
+    添加课程
+{% endblock %}
+
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'courses:course-list' %}">课程</a></li>
+          <li class="breadcrumb-item active" aria-current="page">添加课程</li>
+      </ol>
+    </nav>
+    <div class="card border-0">
+        <div class="card-body pt-0">
+            <div class="card-text">
+                <div class="form-group">
+                    <label for="course-title" class="col-form-label">课程名</label>
+                    <input class="form-control" id="course-title">
+                </div>
+                 <div class="form-group">
+                    <label for="course-overview" class="col-form-label">概述</label>
+                    <textarea class="form-control" rows="10" id="course-overview"></textarea>
+                </div>
+            </div>
+            <a href="http://www.markdown.cn/" target="_blank" class="card-link">概述支持Markdown语法</a>
+            <button data-cid="{{ course.id }}"
+                    class="card-link btn btn-outline-success float-right add-course">
+                <i class="fa fa-paper-plane-o" aria-hidden="true"></i> 提交
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+        $('button.add-course').click(function () {
+            var title = $.trim($('input#course-title').val());
+            var overview = $.trim($('textarea#course-overview').val());
+{#            console.log($('input#course-title').val());#}
+{#            console.log($('textarea#course-overview').val());#}
+            if (title == '' || overview == ''){
+                tips('课程名、概述都不能为空', 'danger');
+                return false;
+            }
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/course/add/',
+                data: {'title': title, 'overview': overview},
+                async: true,
+                success: function (data) {
+                    if (data.msg == 'ok'){
+                        tips('提交成功~', 'success');
+                        setTimeout(function () {
+                            window.location.href = '/course/detail/' + data.id + '/';
+                        }, 1500);
+                        return true;
+                    }else {
+                        tips('哎呀，提交失败了~，请再试一次吧');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return true;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

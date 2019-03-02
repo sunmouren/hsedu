@@ -1,0 +1,169 @@
+{% extends 'bs-base.html' %}
+
+{% load static %}
+
+{% block title %}
+    上传视频
+{% endblock %}
+
+
+{% block content %}
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'courses:course-list' %}">课程</a></li>
+          <li class="breadcrumb-item"><a href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">第 {{ chapter.chapter_number }} 章</li>
+          <li class="breadcrumb-item active" aria-current="page">添加视频</li>
+      </ol>
+    </nav>
+
+    <div class="card border-0">
+      <div class="card-body pt-0">
+
+        <div class="card-subtitle">
+            <div class="form-group">
+                <label for="video-title" class="col-form-label">标题</label>
+                <input class="form-control" id="video-title" required>
+            </div>
+
+             <div class="form-group">
+                <label for="video-file" class="col-form-label">视频</label>
+                <input type="file" class="form-control-file" id="video-file" accept="video/mp4">
+            </div>
+        </div>
+
+        <button type="button" id="upload-video" data-chid="{{ chapter.id }}"
+                class="btn btn-outline-success card-link float-right">确认提交
+        </button>
+
+      </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+
+    <script type="text/javascript" src="{% static 'upload/qiniu.min.js' %}"></script>
+
+    <script>
+
+          $('button#upload-video').click(function () {
+              var title = $.trim($('input#video-title').val());
+              if(title === ''){
+                  tips('标题不能为空', 'danger');
+                  return false;
+              }
+              var file = $("input#video-file")[0].files[0];
+              if (file === null){
+                  tips('请选择视频文件后再执行', 'danger');
+                  return false;
+              }
+              var filename = file.name;
+
+              if (!/\.(mp4|MP4)$/.test(filename)){
+                  tips('请确认选择的文件是视频类型', 'danger');
+                  return false;
+              }
+              // 获取上传token
+              var data = get_token();
+
+              if (data.msg === 'ko'){
+                  tips('执行出错~，请稍后重试', 'danger');
+                  return false;
+              }
+              var token = data.token;
+              // 保存到七牛云的文件名
+              var key = "course/video/" + data.username + '/' + filename;
+              // 显示页面加载圈圈
+              pageLoader('show');
+              // 上传到七牛云
+              uploadToQiNiu(file, key, token);
+          });
+         // 更新新视频链接
+         function uploadVideo(msg, key) {
+            // 构建保存到服务器的avatar_url
+            if (msg === 'ko'){
+                pageLoader('hide');
+                tips('修改失败~, 请稍后重试', 'danger');
+                setTimeout(function () {
+                    location.reload();
+                }, 1500);
+            }
+
+            var video_url = key;
+            var title = $('input#video-title').val();
+            var chapter_id = $('button#upload-video').data('chid');
+
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/course/upload/video/',
+                data: {'title': title, 'chid': chapter_id, 'url': video_url},
+                success: function (data) {
+                    if(data.msg === 'ok'){
+                        pageLoader('hide');
+                        tips('提交成功~', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        pageLoader('hide');
+                        tips('提交失败~, 请稍后重试', 'danger');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    }
+                }
+            });
+        }
+
+        // 上传到七牛云
+        function uploadToQiNiu(file, key, token) {
+            var putExtra = {
+                fname: "",
+                params: {},
+                mimeType: null
+            };
+            var config = {
+              useCdnDomain: true,
+              retryCount: 6,
+            };
+            var next = function () {
+                // 暂无相关操作, 原本是用来显示加载圈圈的
+            };
+            var error = function () {
+                pageLoader('hide');
+                subscription.unsubscribe();
+                uploadVideo('ko', key);
+            };
+            var complete = function (res) {
+                // 更新视频链接
+                uploadVideo('ok', res.key);
+            };
+            var observer = {
+                next: next,
+                error: error,
+                complete: complete
+            };
+
+            var observable = qiniu.upload(file, key, token, putExtra, config);
+            // 开始上传
+            var subscription = observable.subscribe(observer);
+        }
+        // 获取上传token
+        function get_token() {
+            var datas;
+            $.ajax({
+                type: 'GET',
+                url: '/course/upload/token/',
+                async : false, // 一定要设置为false 不然返回不了data
+                success: function (data) {
+                    datas =  data;
+                }
+            });
+            return datas;
+        }
+
+    </script>
+{% endblock %}

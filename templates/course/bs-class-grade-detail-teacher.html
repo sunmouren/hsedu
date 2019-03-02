@@ -1,0 +1,177 @@
+{% extends 'bs-base.html' %}
+
+{% load course_tags %}
+
+{% block title %}
+    {{ classgrade }}
+{% endblock %}
+
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'courses:course-list' %}">课程</a></li>
+          <li class="breadcrumb-item"><a href="{{ classgrade.course.get_absolute_url }}">{{ classgrade.course }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ classgrade }}
+          </li>
+      </ol>
+    </nav>
+    <div class="mb-3 d-block d-sm-none">
+        <button type="button"
+                data-pid="0"
+                data-toggle="modal"
+                data-target="#add-sign"
+                class="btn btn-info btn-block">
+                <i class="fa fa-map-marker" aria-hidden="true"></i> 发起签到
+        </button>
+    </div>
+
+    <h6 class="border-bottom border-gray pb-2 mt-3 mb-3">班级活动</h6>
+    {% for sign_in in sign_ins %}
+        {% if sign_in.is_active %}
+            <div class="d-flex align-items-center p-2 my-3 text-white-50 bg-light rounded ">
+                <div class="card border-0">
+                  <div class="card-body bg-light">
+                      <h5 class="card-title">{{ sign_in.created }} 发起了签到</h5>
+                      <span class="card-link badge badge-pill badge-info">正在进行</span>
+                      <button
+                         data-action="deactivate"
+                         data-sid="{{ sign_in.id }}"
+                         class="card-link btn btn-outline-danger btn-sm cos-sign">关闭签到
+                      </button>
+                  </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="d-flex align-items-center p-2 my-3 text-white-50 bg-light rounded ">
+                <div class="card border-0">
+                  <div class="card-body bg-light">
+                     <h5 class="card-title">{{ sign_in.created }} 发起了签到</h5>
+                     <span class="card-link badge badge-pill badge-info">已经结束</span>
+                     <button
+                        data-action="activate"
+                        data-sid="{{ sign_in.id }}"
+                        class="card-link btn btn-outline-success btn-sm cos-sign">开启签到
+                     </button>
+                      <div class="card-text mt-2">
+                          {% analyze_sign sign_in classgrade as no_signs %}
+                          {% if not sign_in.is_active and no_signs.count != 0 %}
+                            <p class="text-muted">
+                                已签到: {{ sign_in.students_count }}/{{ classgrade.students_count }} 人
+                                <a class="badge badge-light text-primary"
+                                   data-toggle="collapse"
+                                   href="#no-sign-{{ sign_in.id }}"
+                                   aria-expanded="false"
+                                   aria-controls="no-sign-{{ sign_in.id }}">
+                                    显示未签
+                                </a>
+                            </p>
+                            <div class="collapse text-muted" id="no-sign-{{ sign_in.id }}">
+                                {% for no_sign in no_signs %}
+                                    <div class="media text-muted">
+                                        <img src="{{ no_sign.avatar_url }}" alt="" class="user-avatar mr-2 rounded">
+                                        <div class="media-body pb-3 mb-0 small lh-125">
+                                            <div class="d-flex justify-content-between align-items-center w-100">
+                                                <strong class="text-gray-dark">{{ no_sign.get_num_name }}</strong>
+                                            </div>
+                                            <span class="d-block">{{ no_sign.date_joined|timesince }}前加入</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-muted">
+                                已签到: {{ sign_in.students_count }}/{{ classgrade.students_count }} 人
+                            </p>
+                        {% endif %}
+                     </div>
+                  </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+
+{% block sidebar %}
+    <div class="sidebar">
+
+        <h6 class="border-bottom border-gray pb-2 mb-0">创作者</h6>
+        <div class="media text-muted pt-3">
+            <img src="{{ classgrade.course.user.avatar_url }}" alt="" class="user-avatar mr-2 rounded">
+
+            <div class="media-body pb-3 mb-0 small lh-125">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <strong class="text-gray-dark">
+                        <a href="{{ classgrade.course.user.get_absolute_url }}">
+                            {{ classgrade.course.user }}
+                        </a>
+                    </strong>
+                </div>
+                <span class="d-block text-danger">班级邀请码: {{ classgrade.code }}</span>
+            </div>
+        </div>
+        <button type="button"
+                data-pid="0"
+                data-toggle="modal"
+                data-target="#add-sign"
+                class="btn btn-info btn-block">
+                <i class="fa fa-map-marker" aria-hidden="true"></i> 发起签到
+        </button>
+
+
+        <h6 class="border-bottom border-gray mt-3 pb-2 mb-3">订阅者({{ classgrade.students_count }})</h6>
+            {% for student in students %}
+                {% get_course_progress classgrade.course student as course_progerss %}
+                <div class="media text-muted">
+                    <img src="{{ student.avatar_url }}" alt="" class="user-avatar mr-2 rounded">
+                    <div class="media-body pb-3 small lh-125">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <strong class="text-gray-dark">
+                                <a href="{{ student.get_absolute_url }}">{{ student.get_num_name }}</a>
+                            </strong>
+                        </div>
+                        <span class="d-block">课程完成进度: <span class="badge badge-danger badge-pill"> {{ course_progerss }}%</span></span>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="pt-2">暂无订阅者</p>
+            {% endfor %}
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="add-sign" tabindex="-1" role="dialog" aria-labelledby="add-sign-title" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">{{ classgrade }} 发起签到</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="review-form">
+                    <div class="card border-0">
+                        <div class="card-body p-0">
+                            <p class="card-text">
+                               <input type="text" class="form-control sign-code" placeholder="请输入签到码">
+                            </p>
+                            <button data-cgid="{{ classgrade.id }}" class="card-link btn btn-outline-success float-right add-sign">
+                                提交
+                            </button>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}
