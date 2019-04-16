@@ -38,7 +38,7 @@
         {% for course in hot_courses %}
             <div class="card border-0 mt-2">
               <div class="card-body p-1">
-                <h5 class="card-title"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h5>
+                <h5 class="card-title text-truncate"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h5>
                 <h6 class="card-subtitle mb-2 mt-2 text-muted">
                     创作者: <a href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
                 </h6>
