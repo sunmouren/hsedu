@@ -52,8 +52,8 @@
                                     <img class="user-avatar-nav rounded" src="{{ request.user.avatar_url }}" alt="120" />
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a target="_blank" class="dropdown-item" href="{{ request.user.get_absolute_url }}"><i class="fa fa-user-o" aria-hidden="true"></i> 个人主页</a>
-                                    <a target="_blank" class="dropdown-item" href="{% url 'courses:add-course' %}"><i class="fa fa-plus" aria-hidden="true"></i> 添加课程</a>
+                                    <a target="_blank" class="dropdown-item" href="{{ request.user.get_absolute_url }}"><i class="fa fa-user-o text-danger" aria-hidden="true"></i> 个人主页</a>
+                                    <a target="_blank" class="dropdown-item" href="{% url 'courses:add-course' %}"><i class="fa fa-book text-" aria-hidden="true"></i> 添加课程</a>
                                     <a href="javascript:void(0)" class="dropdown-item logout"><i class="fa fa-sign-out" aria-hidden="true"></i> 退出登录</a>
                                 </div>
                               </li>

@@ -238,7 +238,7 @@ class UploadToken(LoginRequiredMixin, View):
             domain = settings.DOMAIN
             return JsonResponse({'msg': 'ok', 'token': token, 'domain': domain,
                                  'username': request.user.username})
-        except:
+        except BaseException:
             return JsonResponse({'msg': 'ko', 'token': token, 'domain': domain,
                                  'username': request.user.username})
 

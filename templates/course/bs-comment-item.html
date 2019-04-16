@@ -1,4 +1,4 @@
-{% load comment_tags %}
+{#{% load comment_tags %}#}
 <div class="card border-0 mt-3 mb-4">
   <div class="card-body p-0">
       <h6 class="card-title">
@@ -20,21 +20,21 @@
           </blockquote>
       {% endif %}
       {% if request.user.is_authenticated %}
-            {% check_is_liked request.user comment as is_liked %}
-            <button type="button"
-                    data-cid="{{ comment.id }}"
-                    data-action="{% if is_liked %}un{% endif %}like"
-                    class="card-link btn btn-outline-danger btn-sm like">
-                <span class="like-heart">
-                    {% if is_liked %}
-                        <i class="fa fa-heart" aria-hidden="true"></i>
-                    {% else %}
-                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                    {% endif %}
-                </span>
-                喜欢
-                <span class="like-count">{{ comment.like_number }}</span>
-            </button>
+{#            {% check_is_liked request.user comment as is_liked %}#}
+{#            <button type="button"#}
+{#                    data-cid="{{ comment.id }}"#}
+{#                    data-action="{% if is_liked %}un{% endif %}like"#}
+{#                    class="card-link btn btn-outline-danger btn-sm like">#}
+{#                <span class="like-heart">#}
+{#                    {% if is_liked %}#}
+{#                        <i class="fa fa-heart" aria-hidden="true"></i>#}
+{#                    {% else %}#}
+{#                        <i class="fa fa-heart-o" aria-hidden="true"></i>#}
+{#                    {% endif %}#}
+{#                </span>#}
+{#                喜欢#}
+{#                <span class="like-count">{{ comment.like_number }}</span>#}
+{#            </button>#}
           <button type="button" class="card-link btn btn-outline-danger btn-sm"
                     data-pid="{{ comment.id }}"
                     data-vid="{{ comment.video.id }}"

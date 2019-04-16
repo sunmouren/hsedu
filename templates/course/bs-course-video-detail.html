@@ -61,21 +61,6 @@
                            <a target="_blank" class="card-link ml-1" href="{{ comment.parent.user.get_absolute_url }}">@{{ comment.parent.user }}</a>
                         {% endif %}
                       {% if request.user.is_authenticated %}
-{#                            {% check_is_liked request.user comment as is_liked %}#}
-{#                            <button type="button"#}
-{#                                    data-cid="{{ comment.id }}"#}
-{#                                    data-action="{% if is_liked %}un{% endif %}like"#}
-{#                                    class="card-link btn btn-outline-danger btn-sm like ml-5 f">#}
-{#                                <span class="like-heart">#}
-{#                                    {% if is_liked %}#}
-{#                                        <i class="fa fa-heart" aria-hidden="true"></i>#}
-{#                                    {% else %}#}
-{#                                        <i class="fa fa-heart-o" aria-hidden="true"></i>#}
-{#                                    {% endif %}#}
-{#                                </span>#}
-{#                                喜欢#}
-{#                                <span class="like-count">{{ comment.like_number }}</span>#}
-{#                            </button>#}
                             <button type="button" class="card-link btn btn-outline-info btn-sm border-0 float-right"
                                     data-pid="{{ comment.id }}"
                                     data-vid="{{ comment.video.id }}"

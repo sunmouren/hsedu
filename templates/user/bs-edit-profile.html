@@ -134,7 +134,7 @@
         // 更新头像
         function updateAvatar(msg, key, uid) {
             // 构建保存到服务器的avatar_url
-            if (msg == 'ko'){
+            if (msg === 'ko'){
                 pageLoader('hide');
                 tips('修改失败~, 请稍后重试', 'danger');
                 setTimeout(function () {
@@ -148,7 +148,7 @@
                 url: '/user/update/avatar/',
                 data: {'uid':uid, 'url': avatar_url},
                 success: function (data) {
-                    if(data.msg == 'ok'){
+                    if(data.msg === 'ok'){
                         pageLoader('hide');
                         tips('修改成功~', 'success');
                         setTimeout(function () {
