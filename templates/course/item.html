@@ -1,0 +1,52 @@
+{% if sidebar == 'ok' %}
+    {% with course=course %}
+        <div class="course-{{ course.id }} text-truncate">
+            <div id="course-info">
+                <h5 class="">
+                    <a href="{{ course.get_absolute_url }}">
+                        <div class="text-truncate">
+                            <strong>{{ course.title }}</strong>
+                        </div>
+                    </a>
+                </h5>
+                <div class="text-truncate text-muted">
+                    {{ course.overview }}
+                </div>
+            </div>
+            <div id="meta-info" class="mt-1">
+                <small>
+                    <span class="card-link">
+                        <a class="badge badge-light text-red" href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
+                    </span>
+                    <span class="card-link small text-muted">
+                        发布于：{{ course.created }}
+                    </span>
+                </small>
+            </div>
+        </div>
+        <hr>
+    {% endwith %}
+{% else %}
+    {% with course=course %}
+        <div class="course-{{ course.id }}">
+            <div id="user-info" class="d-flex align-items-center">
+                <img class="user-avatar-course rounded" src="{{ course.user.avatar_url }}" alt="avatar">
+                <span class="card-link ml-2">
+                    <a href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
+                </span>
+                <span class="card-link text-muted">{{ course.created }}</span>
+            </div>
+            <div id="course-info">
+                <h5 class="mt-2">
+                    <a href="{{ course.get_absolute_url }}">
+                       <strong class="text-truncate"> {{ course.title }}</strong>
+                    </a>
+                </h5>
+                <div class="text-truncate text-muted">
+                    {{ course.overview }}
+                </div>
+            </div>
+        </div>
+        <hr>
+    {% endwith %}
+{% endif %}

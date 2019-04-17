@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% load course_tags %}
+{% load user_tags %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-9">
+            <div class="d-flex align-items-center p-3 text-white-50 bg-light mb-3 rounded">
+                <div class="lh-100">
+                  <h6 class="mb-0 lh-100">
+                      欢迎来到《还是课堂鸭》，在这里主要有以下功能：
+                      创建课程、上传课程视频、流畅的课程视频观看、为课程创建班级、加入班级、
+                      班级课程视频观看进度统计、班级课程签到统计、视频问答、生态题库等等
+                  </h6>
+                  <small>源码已开源：<a target="_blank" href="https://github.com/sunmouren/hsedu">
+                      https://github.com/sunmouren/hsedu 基于 Python3 + Django2 + Bootstrap4 开发</a>
+                  </small>
+                </div>
+            </div>
+            <h6 class="border-bottom border-gray pb-2 mb-3">课程推荐</h6>
+            {% get_hot_course as courses %}
+            {% include 'course/list.html' with courses=courses %}
+        </div>
+        <div class="col-md-3">
+            <h6 class="border-bottom border-gray pb-2 mb-3">最新加入</h6>
+            {% get_recent_users  as recent_user %}
+            {% for user in recent_user %}
+               <div class="media text-muted">
+                    <a href="{{ user.get_absolute_url }}">
+                        <img src="{{ user.avatar_url }}" alt="" class="user-avatar mr-2 rounded">
+                    </a>
+                    <div class="media-body pb-3 small lh-125">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <strong class="text-gray-dark">
+                                <a href="{{ user.get_absolute_url }}">{{ user }}</a>
+                            </strong>
+                        </div>
+                        <span class="d-block border-bottom border-gray pb-2">{{ user.date_joined|timesince }}前加入</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

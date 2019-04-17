@@ -3,7 +3,7 @@ var tips = function ($msg, $type, $icon, $from, $align) {
 	$type  = $type || 'info';
 	$from  = $from || 'top';
 	$align = $align || 'center';
-	$enter = $type == 'success' ? 'animated fadeInUp' : 'animated shake';
+	$enter = $type === 'success' ? 'animated fadeInUp' : 'animated shake';
 
 	jQuery.notify({
 		icon: $icon,
@@ -123,7 +123,7 @@ function vwp(player, progress, cid, vid, url) {
             data: {'duration': parseInt(player.duration), 'progress': t1, 'cid': cid, 'vid':vid},
             async: true,
             success: function(data){
-                if (data['msg'] == 'ok'){
+                if (data['msg'] === 'ok'){
                     isAchieve = true;
                 }
             }
@@ -145,7 +145,7 @@ $(document).ready(function () {
         //     return false;
         // }
 
-        if (username == '' || password == ''){
+        if (username === '' || password === ''){
             tips('邮箱或用户名、密码都不能为空', 'danger');
             return false;
         }
@@ -157,7 +157,7 @@ $(document).ready(function () {
             data: {'username': username, 'password': password},
             async: true,
             success: function (data) {
-                if (data['msg'] == 'ok'){
+                if (data['msg'] === 'ok'){
                     tips('登录成功，页面即将刷新~', 'success');
                     setTimeout(function () {
                         location.reload();
@@ -172,7 +172,7 @@ $(document).ready(function () {
     });
     // 注册
     $('button.user-register').click(function () {
-        var email =  $.trim($('input.register-emial').val());
+        var email =  $.trim($('input.register-email').val());
         var password1 =  $.trim($('input.register-password1').val());
         var password2 =  $.trim($('input.register-password2').val());
         var isEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
@@ -181,7 +181,7 @@ $(document).ready(function () {
             return false;
         }
 
-        if (email == '' || password1 == '' || password2 == ''){
+        if (email === '' || password1 === '' || password2 === ''){
             tips('邮箱、密码、确认密码都不能为空', 'danger');
             return false;
         }
@@ -193,24 +193,24 @@ $(document).ready(function () {
             data: {'email': email, 'password1': password1, 'password2': password2},
             async: true,
             success: function (data) {
-                if (data['msg'] == 'ok'){
+                if (data['msg'] === 'ok'){
                     tips('注册成功，页面即将刷新~', 'success');
                     setTimeout(function () {
                         location.reload();
                     }, 1500);
                     return true;
                 }
-                if (data['msg'] == 'ko'){
+                if (data['msg'] === 'ko'){
                     tips('诶呀~，注册失败，请重新检查邮箱和密码，再试一次吧。', 'danger');
                     return false;
                 }
 
-                if (data['msg'] == 'exists'){
+                if (data['msg'] === 'exists'){
                     tips('诶呀~，邮箱已经被注册。', 'danger');
                     return false;
                 }
 
-                 if (data['msg'] == 'mismatch'){
+                 if (data['msg'] === 'mismatch'){
                     tips('诶呀~，两次密码不一致。', 'danger');
                     return false;
                 }
@@ -236,7 +236,7 @@ $(document).ready(function () {
         var code = $.trim($('input.subscribe-code').val());
         // var cga = $('a#cg-'+cgid);
 
-        if (code == ''){
+        if (code === ''){
             tips('签到码不能为空~', 'danger');
             return false;
         }
@@ -250,7 +250,7 @@ $(document).ready(function () {
             data: {'cgid':cgid, 'code': code},
             async: true,
             success: function (data) {
-                if(data['msg'] == 'ok'){
+                if(data['msg'] === 'ok'){
                     tips('订阅成功, 页面即将刷新~', 'success');
                     // cga.html('<i class="fa fa-check"></i> 已订阅');
                     // cga.addClass('text-success');
@@ -273,7 +273,7 @@ $(document).ready(function () {
     // $('div.class-grade-list').find('a.class-grade-item').click(function () {
     //     $this = $(this);
     //     // var login = $this.data('login');
-    //     // if (login == 'unlogin'){
+    //     // if (login === 'unlogin'){
     //     //     console.log('unlogin');
     //     //     return false;
     //     // }
@@ -287,9 +287,9 @@ $(document).ready(function () {
     //         data: {'classId': classId, 'action': action},
     //         async: true,
     //         success: function (data) {
-    //             if(data['msg'] == 'ok'){
-    //                 $this.data('action', action == 'subscribe' ? 'unsubscribe' : 'subscribe');
-    //                 if (action == 'subscribe'){
+    //             if(data['msg'] === 'ok'){
+    //                 $this.data('action', action === 'subscribe' ? 'unsubscribe' : 'subscribe');
+    //                 if (action === 'subscribe'){
     //                     $this.html('<i class="fa fa-check"></i> 已订阅');
     //                     $('span#subscribe-count-'+classId).text(subscibeCount + 1);
     //                 } else {
@@ -321,7 +321,7 @@ $(document).ready(function () {
         var vid = $this.data('vid');
         var content = $.trim($('textarea.review-content').val());
 
-        if (content == ''){
+        if (content === ''){
             tips('内容不能为空~', 'danger');
             return false;
         }
@@ -333,7 +333,7 @@ $(document).ready(function () {
             data: {'pid': pid, 'vid': vid, 'content': content},
             async: true,
             success: function (data) {
-                if (data['msg'] == 'ok'){
+                if (data['msg'] === 'ok'){
                     var reviewCount = $('span.review-count');
                     reviewCount.text(parseInt(reviewCount.text()) + 1);
                     $('div.review-list').prepend(data['cmt']);
@@ -362,9 +362,9 @@ $(document).ready(function () {
             data: {'cid': cid, 'action': action},
             async: true,
             success: function (data) {
-                if (data['msg'] == 'ok'){
-                    $this.data('action', action == 'like' ? 'unlike' : 'like');
-                    if (action == 'like'){
+                if (data['msg'] === 'ok'){
+                    $this.data('action', action === 'like' ? 'unlike' : 'like');
+                    if (action === 'like'){
                         $this.find('span.like-heart').html('<i class="fa fa-heart" aria-hidden="true"></i>');
                         $this.find('span.like-count').text(likeCount + 1);
                     } else {
@@ -392,7 +392,7 @@ $(document).ready(function () {
         var $this = $(this);
         var sid = $this.data('sid');
         var code = $.trim($('input.sub-sign-code').val());
-        if (code == ''){
+        if (code === ''){
             tips('签到码不能为空~', 'danger');
             return false;
         }
@@ -403,7 +403,7 @@ $(document).ready(function () {
             data: {'sid': sid, 'code': code},
             async: true,
             success: function (data) {
-                if(data['msg'] == 'ok'){
+                if(data['msg'] === 'ok'){
                     tips('签到成功，页面即将刷新~', 'success');
                     setTimeout(function () {
                         location.reload();
@@ -429,7 +429,7 @@ $(document).ready(function () {
            data: {'sid': sid, 'action': action},
            async: true,
            success: function (data) {
-               if (data['msg'] == 'ok') {
+               if (data['msg'] === 'ok') {
                    location.reload();
                    return true;
                } else {
@@ -444,7 +444,7 @@ $(document).ready(function () {
         var $this = $(this);
         var cgid = $this.data('cgid');
         var code = $('input.sign-code').val();
-        if (code == ''){
+        if (code === ''){
             tips('签到码不能为空~', 'danger');
             return false;
         }
@@ -455,7 +455,7 @@ $(document).ready(function () {
             data: {'cgid': cgid, 'code': code},
             async: true,
             success: function (data) {
-                if (data['msg'] == 'ok'){
+                if (data['msg'] === 'ok'){
                     tips('签到成功，页面即将刷新~', 'success');
                     setTimeout(function () {
                         location.reload();
@@ -472,7 +472,7 @@ $(document).ready(function () {
         var $this = $(this);
         var scid = $this.data('scid');
         var answer = $('input.sc'+scid+ ':checked').val();
-        if(null == answer){
+        if(null === answer){
             tips('选项不能为空', 'danger');
             return false;
         }
@@ -483,7 +483,7 @@ $(document).ready(function () {
             data: {'scid': scid, 'answer': answer},
             async: true,
             success: function (data) {
-                if(data['msg'] == 'ok'){
+                if(data['msg'] === 'ok'){
                     tips('提交成功~', 'success');
                     $('div#singlechoice-'+scid).remove();
                     return true;
@@ -504,7 +504,7 @@ $(document).ready(function () {
             data: {'nid': nid},
             async: true,
             success: function (data) {
-                if (data['msg'] == 'ok'){
+                if (data['msg'] === 'ok'){
                     tips('标记成功, 页面即将刷新~', 'success');
                     setTimeout(function () {
                         location.reload();

@@ -1,0 +1,6 @@
+<div class="course-list">
+    {% for course in courses %}
+        {% include 'course/item.html' with course=course %}
+    {% endfor %}
+</div>
+

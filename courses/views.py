@@ -65,7 +65,7 @@ class CourseList(ListView):
     课程列表
     """
     model = Course
-    template_name = 'course/bs-course-list.html'
+    template_name = 'course/course-list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -2,12 +2,16 @@
 	width: 32px;
 	height: 32px;
 }
+.user-avatar-course{
+    width: 28px;
+    height: 28px;
+}
 
 .user-avatar-nav{
 	width: 24px;
 	height: 24px;
 }
-
+.text-red { color: #ea6f5a; }
 /*.test-img{*/
 	/*width: 100%;*/
 	/*height: 200px;*/

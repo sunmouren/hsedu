@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load course_tags %}
+
+
+{% block title %}
+    课程列表
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-9">
+            <h6 class="border-bottom border-gray pb-2 mb-3">最新课程</h6>
+            {% include 'course/list.html' with courses=object_list %}
+        </div>
+        <div class="col-md-3">
+            <h6 class="border-bottom border-gray pb-2 mb-3">推荐课程</h6>
+            {% get_hot_course as hot_courses %}
+            {% include 'course/list.html' with courses=hot_courses sidebar='ok' %}
+        </div>
+    </div>
+{% endblock %}
