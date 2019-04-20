@@ -32,6 +32,7 @@ class AddComment(LoginRequiredMixin, View):
                                         comment=new_comment).save()
                 return JsonResponse({'msg': 'ok', 'cmt': cmt_html})
             except (Video.DoesNotExist, Comment.DoesNotExist, BaseException) as e:
+                print(e)
                 return JsonResponse({'msg': 'ko'})
         return JsonResponse({'msg': 'ko'})
 
