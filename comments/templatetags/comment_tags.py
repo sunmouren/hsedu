@@ -11,7 +11,7 @@ from django.utils.safestring import mark_safe
 
 import markdown
 
-from ..models import CommentNotification, Comment
+from ..models import CommentNotification
 
 
 register = template.Library()
@@ -21,7 +21,7 @@ register = template.Library()
 def check_is_liked(user, comment):
     """
     检查当前用户是否在喜欢书评列表中
-    :param request:
+    :param user:
     :param comment:
     :return:
     """
@@ -51,8 +51,4 @@ def get_unread_count(user):
     """
     return CommentNotification.unread.filter(receiver=user).count() if user.is_authenticated else None
 
-
-@register.simple_tag
-def get_hot_comment(count=5):
-    return Comment.objects.order_by
 

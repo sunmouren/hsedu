@@ -1,0 +1,53 @@
+{% load course_tags %}
+
+{% get_video_progress video request.user as video_progress %}
+
+<div class="d-flex justify-content-md-start align-items-center">
+{#    <div>#}
+{#        <a target="_blank" href="{{ video.get_absolute_url }}">#}
+{#            <div class="img-warp rounded d-flex justify-content-sm-end align-items-end">#}
+{#                <img class="img-warp rounded" src="{{ video.url }}?vframe/jpg/offset/7/w/156/h/100" alt="">#}
+{#                <div class="position-absolute mr-2 mb-1">#}
+{#                    <small class="rounded box-shadow pl-1 pr-1" style="background: rgba(0,0,0,.45)">#}
+{#                        <i class="fa fa-play-circle-o text-white"></i>#}
+{#                        <span class="text-white">{{ video.duration }}</span>#}
+{#                    </small>#}
+{#                </div>#}
+{#            </div>#}
+{#        </a>#}
+{#    </div>#}
+
+
+    <div class="text-truncate">
+        <h5>
+            <a href="{{ video.get_absolute_url }}" class="card-link">
+                {{ video.title|truncatechars:40 }}
+            </a>
+        </h5>
+        <h6 class="">
+            {{ video.overview|truncatechars:40 }}
+        </h6>
+
+        <div>
+
+        </div>
+        <span class="card-link small text-red">
+            视频学习进度: {{ video_progress }}%
+        </span>
+
+        <span href="" class="card-link text-muted small">
+            {{ video.play_count }} 播放
+        </span>
+        <span href="" class="card-link text-muted small">
+            {{ video.comment_set.all.count }} 评论
+        </span>
+        <span href="" class="card-link text-muted small">
+            {{ video.duration }} 时长
+        </span>
+        <span class="card-link text-muted small">
+            {{ video.created }}
+        </span>
+
+    </div>
+
+</div>

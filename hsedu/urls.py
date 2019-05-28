@@ -14,7 +14,7 @@ urlpatterns = [
     path('user/', include('users.urls', namespace='users')),
     # comment
     path('comment/', include('comments.urls', namespace='comments')),
-    path('test/', include('questionbanks.urls', namespace='questionbanks')),
-    # course api
-    path('api/', include('courses.api.urls', namespace='api')),
+    # live
+    path('live/', include('live.urls', namespace='live')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

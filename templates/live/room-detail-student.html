@@ -1,0 +1,106 @@
+{% extends 'base-blank.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    课程直播 - 学生端
+{% endblock %}
+
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a class="card-link" href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">课程直播</li>
+      </ol>
+    </nav>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>友情提示：本功能尚在处于测试阶段, 正式版我们将提供直播回放、合流学生端屏幕共享等功能。</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="live-play" id="remote-player">
+
+    </div>
+{% endblock %}
+
+
+{#{% block js %}#}
+{#    <script type="text/javascript" src='{% static 'live/js/pili-rtc-web.js' %}'></script>#}
+{#    <script type="text/javascript">#}
+{#        function subscribeUser(myRTC, user) {#}
+{#          // 如果用户没有发布就直接返回#}
+{#          if (!user.published) {#}
+{#            return;#}
+{#          }#}
+{#          // 注意这里订阅使用了 Promise 的写法而没有用 async/await#}
+{#          // 因为在我们 Demo 中并没有依赖订阅这个操作的后续操作#}
+{#          // 即没有操作必须等到订阅操作结束之后再运行#}
+{#          myRTC.subscribe(user.userId).then(remoteStream => {#}
+{#            // 我们在 room 页面上准备用来显示远端媒体流的元素#}
+{#            const remotePlayer = document.getElementById('remote-player');#}
+{#            // 在我们准备的元素上播放远端媒体流#}
+{#            remoteStream.play(remotePlayer);#}
+{#          }).catch(e => {#}
+{#            console.log('subscribe error!', e);#}
+{#          });#}
+{#        }#}
+{##}
+{#        const roomToken = "{{ room_token }}";#}
+{#        const myRTC = new QNRTC.StreamModeSession();#}
+{##}
+{##}
+{#        (async () => {#}
+{#            try {#}
+{#                // 调用 SDK 加入房间#}
+{#                const users = await myRTC.joinRoomWithToken(roomToken);#}
+{#                // 加入房间成功后注册事件，当页面被关闭就离开房间#}
+{#                window.onbeforeunload = () => {#}
+{#                    myRTC.leaveRoom();#}
+{#                };#}
+{#                // 监听房间里的用户发布事件，一旦有用户发布，就订阅他#}
+{#                myRTC.on('user-publish', user => {#}
+{#                    subscribeUser(myRTC, user);#}
+{#                });#}
+{#                // 判断房间当前的用户是否有可以订阅的#}
+{#                for (let i = 0; i < users.length; i += 1) {#}
+{#                    const user = users[i];#}
+{#                    // 如果当前房间的用户不是自己并且已经发布#}
+{#                    // 那就订阅他#}
+{#                    if (user.published && user.userId !== myRTC.userId) {#}
+{#                        subscribeUser(myRTC, user);#}
+{#                    }#}
+{#                }#}
+{##}
+{##}
+{#                // 采集本地媒体流，视频和音频都采集#}
+{#                const localStream = await QNRTC.deviceManager.getLocalStream({#}
+{#                    screen: {#}
+{#                        enabled: true,#}
+{#                        source: "screen",#}
+{#                        bitrate: 600,#}
+{#                        height: 1080,#}
+{#                        width: 1920,#}
+{#                    },#}
+{#                    audio: {#}
+{#                        enabled: true,#}
+{#                    }#}
+{#                });#}
+{##}
+{#                // 获取我们 room.html 中准备用来显示本地媒体流的元素#}
+{#                const localPlayer = document.getElementById('local-player');#}
+{#                // 调用媒体流的 play 方法，在我们指定的元素上播放媒体流，其中第二个参数代表 静音播放#}
+{#                localStream.play(localPlayer, true);#}
+{#                // 发布刚刚采集到的媒体流到房间#}
+{#                await myRTC.publish(localStream);#}
+{#                console.log('publish success!');#}
+{##}
+{#            } catch (e) {#}
+{#                console.log('error!', e);#}
+{#            }#}
+{##}
+{#        })();#}
+{#    </script>#}
+{#{% endblock %}#}

@@ -7,31 +7,26 @@
 """
 from django.urls import path
 
-from .views import CourseDetail, CourseVideoDetail, CourseList, \
+from .views import CourseDetail, VideoDetail, CourseList, \
     AddVideoWatchProgress, SubscribeCourse, \
-    ClassGradeDetail, SubSignIn, CosSign, AddSignIn, \
-    UploadVideo, UploadToken, AddChapter, AddCourse, AddClassGrade, course_search
+    ClassDetail, AddVideo, AddCourse, AddClass, course_search, AddCourseResource
 
 
 app_name = 'courses'
 
 urlpatterns = [
     path('add/', AddCourse.as_view(), name='add-course'),
-    path('detail/<int:pk>/', CourseDetail.as_view(), name='course-detail'),
+    path('<int:course_id>/video/add/', AddVideo.as_view(), name='add-video'),
+    path('video/add/', AddVideo.as_view()),
+    path('detail/<int:course_id>/', CourseDetail.as_view(), name='course-detail'),
     path('list/', CourseList.as_view(), name='course-list'),
-    path('video/<int:pk>/', CourseVideoDetail.as_view(), name='course-video'),
+    path('video/<int:pk>/', VideoDetail.as_view(), name='course-video'),
     path('addvwp/', AddVideoWatchProgress.as_view()),
     path('subscribe/', SubscribeCourse.as_view()),
-    path('class/detail/<int:pk>/', ClassGradeDetail.as_view(), name='class-detail'),
-    path('add/sign/', AddSignIn.as_view()),
-    path('sub/sign/', SubSignIn.as_view()),
-    path('cos/sign/', CosSign.as_view()),
-    path('upload/video/<int:cid>/<int:chapter_id>/', UploadVideo.as_view(), name='upload-video'),
-    path('upload/video/', UploadVideo.as_view()),
-    path('upload/token/', UploadToken.as_view()),
-    path('add/chapter/<int:cid>', AddChapter.as_view(), name='add-chapter'),
-    path('add/chapter/', AddChapter.as_view()),
-    path('add/class/<int:cid>/', AddClassGrade.as_view(), name='add-classgrade'),
-    path('add/class/', AddClassGrade.as_view()),
+    path('class/detail/<int:class_id>/', ClassDetail.as_view(), name='class-detail'),
+    path('add/class/<int:cid>/', AddClass.as_view(), name='add-class'),
+    path('add/class/', AddClass.as_view()),
+    path('add/resource/<int:cid>', AddCourseResource.as_view(), name='add-course-resource'),
+    path('add/resource/', AddCourseResource.as_view()),
     path('search/', course_search, name='course-search'),
 ]

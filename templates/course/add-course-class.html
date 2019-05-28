@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    添加开课班级
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a class="card-link" href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">添加开课班级</li>
+              </ol>
+            </nav>
+            <div class="form-group">
+                <label for="title" class="col-form-label">班级名</label>
+                <input class="form-control" id="title">
+            </div>
+            <div class="form-group">
+                <label for="code" class="col-form-label">邀请码</label>
+                <input class="form-control" id="code" placeholder="用于订阅班级">
+            </div>
+
+            <button data-cid="{{ course.id }}" class="btn btn-info btn-block add-class">
+                确认添加
+            </button>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+        $('button.add-class').click(function () {
+            var title = $.trim($('input#title').val());
+            var code = $.trim($('input#code').val());
+            var cid = $(this).data('cid');
+            if (title === '' || code === ''){
+                tips('班级名、邀请码都不能为空', 'danger');
+                return false;
+            }
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/course/add/class/',
+                data: {'cid': cid, 'title': title, 'code': code},
+                async: true,
+                success: function (data) {
+                    if (data.msg === 'ok'){
+                        tips('提交成功~', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return true;
+                    }else {
+                        tips('哎呀，提交失败了~，请再试一次吧');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return true;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

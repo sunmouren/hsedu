@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    搜索结果
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h6 class="">
+                搜索关键字: <span class="text-danger">{{ query }}</span> <span class="float-right text-success">{{ results.count }} 个相关内容</span>
+            </h6>
+            {% include 'course/list.html' with courses=results %}
+        </div>
+
+    </div>
+
+{% endblock %}

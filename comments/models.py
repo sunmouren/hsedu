@@ -4,7 +4,7 @@ from django.db import models
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
-from courses.models import Course, Video
+from courses.models import Video
 
 
 class Comment(MPTTModel):

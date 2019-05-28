@@ -8,42 +8,86 @@
 {% endblock %}
 
 {% block content %}
+
     <div class="row">
-        <div class="col-md-9">
-            <div class="d-flex align-items-center p-3 text-white-50 bg-light mb-3 rounded">
-                <div class="lh-100">
-                  <h6 class="mb-0 lh-100">
-                      欢迎来到《还是课堂鸭》，在这里主要有以下功能：
-                      创建课程、上传课程视频、流畅的课程视频观看、为课程创建班级、加入班级、
-                      班级课程视频观看进度统计、班级课程签到统计、视频问答、生态题库等等
-                  </h6>
-                  <small>源码已开源：<a target="_blank" href="https://github.com/sunmouren/hsedu">
-                      https://github.com/sunmouren/hsedu 基于 Python3 + Django2 + Bootstrap4 开发</a>
-                  </small>
-                </div>
-            </div>
-            <h6 class="border-bottom border-gray pb-2 mb-3">课程推荐</h6>
-            {% get_hot_course as courses %}
-            {% include 'course/list.html' with courses=courses %}
-        </div>
-        <div class="col-md-3">
-            <h6 class="border-bottom border-gray pb-2 mb-3">最新加入</h6>
-            {% get_recent_users  as recent_user %}
-            {% for user in recent_user %}
-               <div class="media text-muted">
-                    <a href="{{ user.get_absolute_url }}">
-                        <img src="{{ user.avatar_url }}" alt="" class="user-avatar mr-2 rounded">
-                    </a>
-                    <div class="media-body pb-3 small lh-125">
-                        <div class="d-flex justify-content-between align-items-center w-100">
-                            <strong class="text-gray-dark">
-                                <a href="{{ user.get_absolute_url }}">{{ user }}</a>
-                            </strong>
+        <div class="col-md-10 offset-md-1">
+
+            {% get_course_banner_list as banner_list %}
+
+
+
+                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                  <ol class="carousel-indicators">
+                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                  </ol>
+                  <div class="carousel-inner rounded " style="height: 280px">
+                    {% for banner in banner_list %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %} " >
+                            <a target="_blank" href="{{ banner.absolute_url }}">
+                                <img class="d-block w-100" style="height: 280px"
+                                     src="{{ banner.img_url }}" alt="banner">
+                            </a>
+
                         </div>
-                        <span class="d-block border-bottom border-gray pb-2">{{ user.date_joined|timesince }}前加入</span>
+                    {% endfor %}
+                  </div>
+                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="mt-3 text-muted">热门课程 <a class="float-right card-link badge btn-light text-red" href="{% url 'courses:course-list' %}">全部课程</a></h6>
+                        {% get_hot_course as courses %}
+                        {% include 'course/list.html' with courses=courses %}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 mt-3 bg-light rounded">
+                            <h6 class="text-muted">在这里，我们提供模块有：课程模块、视频问答、班级模块、学习进度、多人在线视频互动等等</h6>
+                            <span class="card-link"><a target="_blank" class=" card-link" href="https://github.com/sunmouren/hsedu">欢迎点击这里访问我们的开源地址，顺便给个小星星，谢谢！</a></span>
+                        </div>
+                        <div class="mt-3 ">
+                            <h6 class="text-muted">最近加入的用户</h6>
+                            <hr>
+                            {% get_recent_users  as recent_user %}
+                            {% for user in recent_user %}
+                                <div class="d-flex justify-content-start align-items-center mb-3">
+                                    <div>
+                                        <a href="{{ user.get_absolute_url }}">
+                                            <img src="{{ user.avatar_url }}" alt="" class="user-avatar-recent rounded-circle">
+                                        </a>
+                                    </div>
+                                    <div class="ml-3 small">
+                                        <strong class="d-flex">
+                                            <a class="card-link" href="{{ user.get_absolute_url }}">{{ user }}</a>
+                                        </strong>
+                                        <span class="text-muted">
+                                            {{ user.date_joined|timesince }}前加入
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </div>
                     </div>
                 </div>
-            {% endfor %}
+
+
+                <div class="col-md-4">
+
+                </div>
+
+
+
         </div>
     </div>
 {% endblock %}

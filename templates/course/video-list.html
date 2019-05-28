@@ -1,0 +1,16 @@
+<div class="video-list">
+    {% if is_subscriber == 'ok' %}
+        {% for video in videos %}
+
+            {% include 'course/video-item-student.html' with video=video %}
+             <hr>
+        {% endfor %}
+    {% else %}
+        {% for video in videos %}
+
+            {% include 'course/video-item.html' with video=video %}
+            <hr>
+        {% endfor %}
+    {% endif %}
+</div>
+

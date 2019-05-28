@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% load comment_tags %}
+
+{% block title %}
+    问答通知
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h6 class="">{{ notification_list.count }} 条通知</h6>
+            {% include 'comment/notification-list.html' with notification_list=notification_list %}
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $('button#btn-comment').click(function () {
+            var $this = $(this);
+            var videoId = $this.data('vid');
+            var commentId = $this.data('cid');
+            var commentTextArea = $("textarea#" + 'comment-text-' + commentId);
+            var commentText = $.trim(commentTextArea.val());
+            if (commentText === ''){
+                tips('评论内容不能为空~', 'danger');
+                return false;
+            }
+            console.log(commentText);
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/comment/add/',
+                data: {'pid': commentId, 'vid': videoId, 'content': commentText},
+                async: true,
+                success: function (data) {
+                    if (data['msg'] === 'ok'){
+                        tips('发布成功~', 'success');
+                        var commentCount = $('span.comment-count');
+                        commentCount.text(parseInt(commentCount.text()) + 1);
+                        $('div#comment-list').prepend(data['cmt']);
+                        commentTextArea.val('');
+                    } else {
+                        tips('发布失败, 请刷新后重试', 'danger');
+                    }
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

@@ -3,14 +3,25 @@
 	height: 32px;
 }
 .user-avatar-course{
-    width: 28px;
-    height: 28px;
+    width: 35px;
+    height: 35px;
+}
+
+.user-avatar-recent{
+    width: 45px;
+    height: 45px;
 }
 
 .user-avatar-nav{
 	width: 24px;
 	height: 24px;
 }
+
+.user-avatar-home{
+    width: 50px;
+    height: 50px;
+}
+
 .text-red { color: #ea6f5a; }
 /*.test-img{*/
 	/*width: 100%;*/
@@ -30,6 +41,19 @@
 .bg-purple { background-color: var(--purple); }
 
 
+.img-warp {
+    width: 156px;
+    height: 100px;
+}
+
+.play-icon{
+    position: absolute;
+    top: 48px;
+    left: 90px;
+    width: 60px;
+    height: 60px;
+}
+
 /* ---------------------
  * loading 加载圈圈
  ----------------------- */
@@ -48,3 +72,5 @@ blockquote {
     background: #f4f5f6;
     border-radius: 3px;
 }
+
+

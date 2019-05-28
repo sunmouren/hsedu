@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.contrib.contenttypes.fields import GenericRelation
+
+from resources.models import Resources
 
 
 class Course(models.Model):
@@ -8,17 +11,20 @@ class Course(models.Model):
     课程表
     """
     title = models.CharField(max_length=64)
-    overview = models.TextField()
+    overview = models.TextField(blank=True, null=True)
+    img_url = models.URLField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+                             on_delete=models.CASCADE, related_name='user_courses')
     view_count = models.PositiveIntegerField(default=0)
+    study_count = models.PositiveIntegerField(default=0)
+    study_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='study_users', blank=True)
+    resources = GenericRelation(Resources)
     created = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
-        self.increase_view_count()
         return reverse('courses:course-detail', args=[self.pk])
 
-    def increase_view_count(self):
+    def add_view_count(self):
         self.view_count += 1
         self.save()
 
@@ -31,34 +37,17 @@ class Course(models.Model):
         return self.title
 
 
-class Chapter(models.Model):
-    """
-    章节表
-    """
-    chapter_number = models.PositiveIntegerField(default=1)
-    title = models.CharField(max_length=64)
-    overview = models.TextField()
-    course = models.ForeignKey('Course', on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = '章节'
-        verbose_name_plural = verbose_name
-        ordering = ('chapter_number',)
-
-    def __str__(self):
-        return self.title
-
-
 class Video(models.Model):
     """
-    章节视频表
+    课程视频表
     """
     title = models.CharField(max_length=64)
     overview = models.TextField(blank=True, null=True)
-    url = models.CharField(max_length=256)
-    minute = models.PositiveIntegerField(default=1)
-    chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
+    url = models.URLField(blank=True, null=True)
+    duration = models.CharField(max_length=20, null=True, blank=True)
+    course = models.ForeignKey('Course', on_delete=models.CASCADE,
+                               blank=True, null=True,
+                               related_name='course_videos')
     play_count = models.PositiveIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -68,18 +57,14 @@ class Video(models.Model):
         ordering = ('created',)
 
     def get_absolute_url(self):
-        self.increase_play_count()
-        return reverse('courses:course-video', args=[self.pk])
 
-    def increase_play_count(self):
-        self.play_count += 1
-        self.save()
+        return reverse('courses:course-video', args=[self.pk])
 
     def __str__(self):
         return self.title
 
 
-class ClassGrade(models.Model):
+class CourseClass(models.Model):
     """
     班级表
     """
@@ -127,30 +112,29 @@ class VideoWatchProgress(models.Model):
         return '{0}观看<<{1}>>进度为:{2}%'.format(self.user, self.video, int(self.progress / self.duration * 100))
 
 
-class SignIn(models.Model):
+class ClassWork(models.Model):
     """
-    签到表
+    班级作业表
     """
-    code = models.CharField(max_length=32, verbose_name='验证码')
-    is_active = models.BooleanField(default=True)
-    students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='yet_sign_in', blank=True)
-    students_count = models.PositiveIntegerField(default=0)
-    classgrade = models.ForeignKey('ClassGrade', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='create_sign_in')
+    title = models.CharField(max_length=64)
+    course_class = models.ForeignKey('CourseClass', on_delete=models.CASCADE)
+    resources = GenericRelation(Resources)
     created = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        verbose_name = '签到'
-        verbose_name_plural = verbose_name
-        ordering = ('-created', )
+    def __str__(self):
+        return self.course_class
+
+
+class WorkItem(models.Model):
+    """
+    学生作业表
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    resources = GenericRelation(Resources)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '{0}的{1}签到'.format(self.classgrade, self.created)
-
-
-
-
-
+        return self.user
 
 
 

@@ -6,6 +6,7 @@ cryptography==2.4.1
 Django==2.1.3
 django-js-asset==1.1.0
 django-mptt==0.9.1
+django-sslserver==0.20
 djangorestframework==3.9.0
 idna==2.7
 Markdown==3.0.1

@@ -26,6 +26,7 @@ SECRET_KEY = 'td2#l2#oge_%db@js_+35z7#h=k*dwub+bzaf872r$s1nar(&7'
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost ', '.haishionline.com']
+# ALLOWED_HOSTS = ['192.168.43.35']
 
 
 # Application definition
@@ -41,12 +42,14 @@ INSTALLED_APPS = [
     'users',
     'courses',
     'comments',
-    'questionbanks',
     # third part app
     'rest_framework',
     'mptt',
+    # 'sslserver',
     # full-text search
     'django.contrib.postgres',
+    'resources',
+    'live',
 ]
 
 MIDDLEWARE = [
@@ -178,3 +181,4 @@ BUCKET_NAME = 'hsonline'
 ACCESS_KEY = '5fCtYuw72dt7UZiL3G1GWROtl-GTVC5bYYDVdhRI'
 SECRET_KEY = 'g1DKeYcCPop64IkcrOzHIr1S011MJ6x74MqXFvSu'
 DOMAIN = 'http://storage.haishionline.com/'
+QINIU_RTN_APPID = 'e61163l9z'

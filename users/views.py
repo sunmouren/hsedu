@@ -11,6 +11,8 @@ from django.shortcuts import render, get_object_or_404
 
 from courses.models import Course
 
+from utils.cmmon import upload_token
+
 from .models import UserProfile
 
 
@@ -83,7 +85,7 @@ class NoLogin(View):
     如果还没有登录，就进行操作，就定向到这里
     """
     def get(self, request):
-        return render(request, 'bs-no-login.html')
+        return render(request, 'no-login.html')
 
 
 class UserHome(View):
@@ -93,13 +95,13 @@ class UserHome(View):
     def get(self, request, uid):
         user = get_object_or_404(UserProfile, id=int(uid))
         courses = Course.objects.filter(user=user)
-        subscribed_courses = Course.objects.filter(classgrade__students=user)
+        subscribed_courses = Course.objects.filter(courseclass__students=user)
         context = {
             'user': user,
             'courses': courses,
             'subscribed_courses': subscribed_courses,
         }
-        return render(request, 'user/bs-user-home.html', context=context)
+        return render(request, 'user/home.html', context=context)
 
 
 class EditProfile(LoginRequiredMixin, View):
@@ -108,9 +110,14 @@ class EditProfile(LoginRequiredMixin, View):
     """
     def get(self, request, uid):
         user = get_object_or_404(UserProfile, id=int(uid))
+        token = upload_token()
+        context = {
+            'user': user,
+            'token': token,
+        }
         if user != request.user:
             raise Http404
-        return render(request, 'user/bs-edit-profile.html', {'user': user})
+        return render(request, 'user/edit-profile.html', context=context)
 
 
 class UpdateProfile(LoginRequiredMixin, View):

@@ -1,0 +1,46 @@
+<div class="d-flex justify-content-start align-items-start mt-3">
+    <div >
+        <a href="">
+            <img class="user-avatar rounded-circle" src="{{ notification.sender.avatar_url }}" alt="">
+        </a>
+
+    </div>
+    <div class="ml-3">
+        <a class="card-link" href="{{ notification.sender.get_absolute_url }}">{{ notification.sender }}</a>
+        <span class="card-link">在</span>
+        <a class="card-link" href="{{ notification.comment.video.get_absolute_url }}">{{ notification.comment.video.title }}</a>
+        <span class="card-link">中回复了您:</span>
+        <div class="mt-1">
+            {{ notification.comment.content }}
+        </div>
+    </div>
+</div>
+
+{% if notification.comment.parent %}
+    <div class="mt-2 ml-5 border border-right-0 border-top-0 border-bottom-0 border-secondary pl-2">
+        <a class="card-link" href="{{ notification.comment.parent.user.get_absolute_url }}">@{{ notification.comment.parent.user }}: </a>
+        {{ notification.comment.parent.content }}
+    </div>
+{% endif %}
+
+<div class="ml-5 mt-3">
+    <span class="card-link">{{ notification.created }}</span>
+    <a class="badge badge-light card-link text-red" data-toggle="collapse" href="#comment-{{ notification.comment.id }}-collapse">
+        回复
+    </a>
+</div>
+
+<div class="collapse ml-5 mt-3 clearfix" id="comment-{{ notification.comment.id }}-collapse">
+    <div class="form-group">
+        <textarea class="form-control bg-light" placeholder="@{{ notification.sender }}:" rows="3" id="comment-text-{{ notification.comment.id }}"></textarea>
+    </div>
+    <div class="mt-2">
+         <button data-vid="{{ notification.comment.video.id }}"
+                 data-cid="{{ notification.comment.id }}"
+                 class="btn btn-sm btn-outline-success float-right"
+                 id="btn-comment">
+             确认回复
+         </button>
+    </div>
+</div>
+<hr>

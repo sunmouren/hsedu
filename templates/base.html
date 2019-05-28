@@ -16,12 +16,10 @@
         {% endblock %}
 	</head>
 	<body>
-		<nav class="navbar navbar-expand-xl navbar-light bg-white fixed-top border border-top-0 border-left-0 border-right-0">
+		<nav class="navbar navbar-expand-xl navbar-light bg-white fixed-top  border border-top-0 border-left-0 border-right-0">
 			<div class="container">
 				<a class="navbar-brand" href="{% url 'index' %}">
-                    <strong class="text-red">
-                         还是课堂鸭
-                    </strong>
+                    <strong class="text-red">海蜇课堂</strong>
                 </a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -36,14 +34,14 @@
                             </span>
                         </a>
                       </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'courses:course-list' %}">
-                              <span class="{% ifequal 'course-list' current_page %}text-red{% endifequal %}">
-                                  <i class="fa fa-book" aria-hidden="true"></i> 课程
-                              </span>
-
-                          </a>
-                      </li>
+{#                      <li class="nav-item">#}
+{#                          <a class="nav-link" href="{% url 'live:join-room' %}">#}
+{#                              <span class="{% ifequal 'course-list' current_page %}text-red{% endifequal %}">#}
+{#                                  <i class="fa fa-book" aria-hidden="true"></i> 课程#}
+{#                              </span>#}
+{##}
+{#                          </a>#}
+{#                      </li>#}
                     <form class="form-inline my-2 my-lg-0">
                         <ul class="navbar-nav mr-auto">
                              {% if request.user.is_authenticated %}
@@ -51,7 +49,7 @@
                                   {% get_unread_count request.user as unread_count %}
                                   <a class="nav-link" href="{% url 'comments:notifications' %}">
                                     <span class="{% ifequal 'notice' current_page %}text-red{% endifequal %}">
-                                        <i class="fa fa-bell-o" aria-hidden="true"></i> 消息
+                                        <i class="fa fa-bell-o" aria-hidden="true"></i> 通知
                                     </span>
 
                                       {% if unread_count %}
@@ -65,7 +63,7 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ request.user.get_absolute_url }}"><i class="fa fa-user-o text-muted" aria-hidden="true"></i> 个人主页</a>
-                                    <a class="dropdown-item" href="{% url 'courses:add-course' %}"><i class="fa fa-book text-muted" aria-hidden="true"></i> 添加课程</a>
+                                    <a class="dropdown-item" href="{% url 'courses:add-course' %}"><i class="fa fa-plus text-muted" aria-hidden="true"></i> 创建课程</a>
                                     <a href="javascript:void(0)" class="dropdown-item logout"><i class="fa fa-sign-out text-muted" aria-hidden="true"></i> 退出登录</a>
                                 </div>
                               </li>
@@ -224,7 +222,7 @@
                         url: '/user/logout/',
                         async: true,
                         success: function (data) {
-                            if (data['msg'] == 'ok'){
+                            if (data['msg'] === 'ok'){
                                 tips('成功退出登录，页面即将刷新~', 'success');
                                 setTimeout(function () {
                                     window.location.href = '/';

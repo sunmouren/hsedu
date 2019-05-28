@@ -25,8 +25,7 @@ class AddComment(LoginRequiredMixin, View):
                 new_comment = Comment(user=request.user, video=video, parent=parent, content=content)
                 new_comment.save()
                 cmt_html = render_comment_html(request=request, comment=new_comment)
-                # 创建评论通知, 这里也可以通过信号来创建，但为了防止以后出现问题不清楚，直接在这里创建
-                if parent:
+                if parent and parent.user != request.user:
                     CommentNotification(sender=request.user,
                                         receiver=parent.user,
                                         comment=new_comment).save()
@@ -41,11 +40,10 @@ def render_comment_html(request, comment):
     """
     render comment to string html
     :param request:
-    :param book:
     :param comment:
     :return:
     """
-    cmt_html = render_to_string('course/bs-comment-item.html',
+    cmt_html = render_to_string('comment/item.html',
                                 context={'comment': comment},
                                 request=request)
     return cmt_html
@@ -74,23 +72,13 @@ class AddLike(LoginRequiredMixin, View):
 class CommentNotificationList(LoginRequiredMixin, View):
     def get(self, request):
         current_page = 'notice'
-        unread_list = CommentNotification.unread.filter(receiver=request.user)
-        ntf_list = CommentNotification.objects.filter(receiver=request.user).filter(is_read=True)
-        return render(request, 'bs-notifications.html', context={
-            'unread_list': unread_list,
-            'ntf_list': ntf_list,
+        # 将未读消息跟新为已读
+        CommentNotification.objects.select_for_update().filter(receiver=request.user, is_read=False).update(is_read=True)
+
+        notification_list = CommentNotification.objects.filter(receiver=request.user)
+
+        return render(request, 'comment/notifications-detail.html', {
+            'notification_list': notification_list,
             'current_page': current_page
         })
 
-    def post(self, request):
-        if request.is_ajax():
-            nid = request.POST.get('nid', None)
-            if nid:
-                try:
-                    ntf = CommentNotification.objects.get(id=int(nid))
-                    ntf.is_read = True
-                    ntf.save()
-                    return JsonResponse({'msg': 'ok'})
-                except CommentNotification.DoesNotExist:
-                    return JsonResponse({'msg': 'ko'})
-        return JsonResponse({'msg': 'ko'})

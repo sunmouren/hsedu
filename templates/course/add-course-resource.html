@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+
+
+{% block title %}
+    添加课程资源
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a class="card-link" href="{{ course.get_absolute_url }}">{{ course }}</a></li>
+              <li class="breadcrumb-item active" aria-current="page">添加课程资源</li>
+          </ol>
+            <div class="form-group">
+                <input id="file" type="file" >
+            </div>
+            <div class="form-group">
+                <label for="title" class="col-form-label">资源标题</label>
+                <input class="form-control" id="title">
+            </div>
+
+            <button class="btn btn-block btn-info mt-3" id="btn-add">
+                确认添加
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'js/qiniu.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/md5.js' %}"></script>
+    <script type="text/javascript">
+        $("#file").change(function(){
+            $('input#title').val(this.files[0].name);
+            return true;
+         });
+
+
+        $('button#btn-add').click(function () {
+
+            var file = $("input#file")[0].files[0];
+            if (file === null || file === undefined){
+                tips('资源文件不能为空', 'danger');
+                return false;
+            }
+
+            var title = $('input#title').val();
+
+            if (title === ''){
+                tips('视频标题、概述不能为空', 'danger');
+                return false;
+            }
+
+            var kargs = {
+                'token': '{{ token }}',
+                'username': '{{ username }}',
+                'file': file,
+                'saveUpload': function () {
+                    $.ajax({
+                        cache: false,
+                        type: 'POST',
+                        url: '/course/add/resource/',
+                        data: {'title': title, 'courseId': {{ course.id }}, 'resourceUrl': arguments[0]},
+                        async: true,
+                        success: function (data) {
+                            pageLoader('hide');
+                            if (data.msg === 'ok'){
+                                tips('提交成功~', 'success');
+                                setTimeout(function () {
+                                    window.location.href = '/course/detail/' + data.id + '/';
+                                }, 1500);
+
+                            }else {
+                                tips('哎呀，提交失败了~，请再试一次吧');
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 1500);
+                            }
+                        }
+                    });
+
+                }
+            };
+            uploadResource(kargs);
+        });
+
+
+    </script>
+{% endblock %}

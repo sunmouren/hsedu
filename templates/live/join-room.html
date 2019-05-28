@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+
+
+{% block title %}
+    加入会议
+{% endblock %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'live/css/room.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="row bg-light">
+        <div class="col-md-12">
+            <div id="remoteplayer" class="fullscreen-player"></div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript" src='{% static 'live/js/pili-rtc-web.js' %}'></script>
+    <script type="text/javascript">
+
+        const roomToken = "{{ room_token }}";
+        const myRTC = new QNRTC.StreamModeSession();
+
+        function subscribeUser(myRTC, user) {
+
+            if (!user.published) {
+                return;
+            }
+            myRTC.subscribe(user.userId).then(remoteStream => {
+
+                const remotePlayer = document.getElementById('remoteplayer');
+
+                remoteStream.play(remotePlayer);
+            }).catch(e => {
+                console.log('subscribe error!', e);
+            });
+        }
+
+
+
+
+    (async () => {
+
+        try {
+            // 调用 SDK 加入房间
+            const users = await myRTC.joinRoomWithToken(roomToken);
+
+            // 监听房间里的用户发布事件，一旦有用户发布，就订阅他
+            myRTC.on('user-publish', user => {
+                subscribeUser(myRTC, user);
+            });
+            // 判断房间当前的用户是否有可以订阅的
+            for (let i = 0; i < users.length; i += 1) {
+                console.log(users[i]);
+                const user = users[i];
+                // 如果当前房间的用户不是自己并且已经发布
+                // 那就订阅他
+                if (user.published && user.userId !== myRTC.userId) {
+                    subscribeUser(myRTC, user);
+                }
+            }
+            console.log('joinRoom success! 当前房间用户:', users);
+            // 检查chrome录屏插件是否安装
+{#            isChromeExtensionAvailable().then(isAvailable => {#}
+{#                if (!isAvailable) {#}
+{#                    console.log("插件异常！");#}
+{#                }#}
+{#            });#}
+
+
+            // 采集本地媒体流，视频和音频都采集
+            const localStream = await QNRTC.deviceManager.getLocalStream({
+                screen: {
+                    enabled: true,
+                    source: "screen",
+                    bitrate: 600,
+                    height: 1080,
+                    width: 1920,
+                },
+                audio: {
+                    enabled: true,
+                }
+            });
+{#            // 获取我们 room.html 中准备用来显示本地媒体流的元素#}
+{#            const localPlayer = document.getElementById('localplayer');#}
+{#            // 调用媒体流的 play 方法，在我们指定的元素上播放媒体流，其中第二个参数代表 静音播放#}
+{#            localStream.play(localPlayer, true);#}
+            // 发布刚刚采集到的媒体流到房间
+            await myRTC.publish(localStream);
+
+
+
+            window.onbeforeunload = () => {
+                myRTC.leaveRoom();
+            };
+
+        } catch (e) {
+            console.log('error!', e);
+        }
+
+
+    })();
+
+
+    $('button#switchScreen').click(function () {
+        console.info("---switchScreen-----");
+        const localPlayer = document.getElementById("localplayer");
+        const remotePlayer = document.getElementById("remoteplayer");
+        // 交换 2 个元素的 class
+        if (localPlayer.className === "mini-player") {
+            localPlayer.className = "fullscreen-player";
+            remotePlayer.className = "mini-player";
+        } else {
+            localPlayer.className = "mini-player";
+            remotePlayer.className = "fullscreen-player";
+        }
+    })
+
+
+    </script>
+
+{% endblock %}

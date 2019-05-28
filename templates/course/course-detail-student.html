@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% load course_tags %}
+
+
+{% block title %}
+   课程详情 - {{ course }}
+{% endblock %}
+
+
+
+{% block content %}
+
+    {% get_course_progress course request.user as course_progress %}
+    {% check_is_live_room_active course as is_live_room_active %}
+
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+
+
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>课程完成总进度:</strong> {{ course_progress }}%
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+
+            <div class="p-3 mb-3 bg-light rounded">
+                <div class="d-flex justify-content-md-start align-items-center ">
+                    <div>
+                        <a href="{{ course.user.get_absolute_url }}">
+                            <img src="{{ course.user.avatar_url }}" alt="" class="user-avatar rounded-circle">
+                        </a>
+                    </div>
+                     <div class="ml-3">
+                         <a href="{{ course.user.get_absolute_url }}" class="card-link">
+                             {{ course.user }}
+                         </a>
+                         <span class="card-link text-muted">
+                            {{ course.view_count }} 浏览量
+                        </span>
+                        <span class="card-link text-muted">
+                            {{ course.created }}
+                        </span>
+                     </div>
+                </div>
+                <div class="d-flex justify-content-md-between align-items-center mt-1">
+
+                    <div class="mr-3">
+                        <h5>
+                            {{ course }}
+                        </h5>
+                        <span class="text-muted">{{ course.overview}}</span>
+                    </div>
+                    <div class="">
+                        <a href="{{ course.get_absolute_url }}">
+                            <img class="img-warp rounded box-shadow" alt="" src="{{ course.img_url }}">
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            {% if is_live_room_active %}
+                <div class="mt-3 mb-3">
+                    <a class="btn btn-light text-red btn-block" href="{% url 'live:room-detail' course.id %}" role="button">
+                        <i class="fa fa-video-camera"></i> 课程直播在进行
+                    </a>
+                </div>
+            {% endif %}
+
+
+
+             <!-- 选项卡 -->
+            <ul class="nav nav-tabs">
+
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#video-list">课程视频 </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#comment-list">视频评论</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " data-toggle="tab" href="#resource-list">课程资源</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " data-toggle="tab" href="#class-list">开课班级</a>
+                </li>
+
+            </ul>
+
+
+            <div class="tab-content mt-4">
+
+                <div class="tab-pane active " id="video-list">
+                    {% include 'course/video-list.html' with videos=video_list is_subscriber='ok' %}
+                </div>
+                <div class="tab-pane fade " id="comment-list">
+                    {% include 'comment/course-detail-list.html' with comments=comment_list %}
+                </div>
+                <div class="tab-pane fade" id="resource-list">
+                    {% for resource in resource_list %}
+                        <div class="">
+                            <a target="_blank" class="card-link" href="{{ resource.url }}">{{ resource.title }}</a>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+                <div class="tab-pane fade" id="class-list">
+                    {% for class in class_list %}
+                        {% check_is_subscriber course request.user class.id as is_class_subscriber %}
+                       <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if is_class_subscriber %}
+                                    <a class="card-link" href="{{ class.get_absolute_url }}">
+                                        {{ class }}
+                                    </a>
+                                {% else %}
+                                    <a class="card-link text-muted">
+                                        {{ class }}
+                                    </a>
+                                {% endif %}
+                            </div>
+
+
+                            <div>
+
+                              {% if is_class_subscriber %}
+                                    <a class="text-muted">
+                                        <i class="fa fa-check"></i> 已加入
+                                    </a>
+                              {% else %}
+
+                                  <a class="card-link text-success" id="cg-{{ class.id }}"
+                                     data-cgid="{{ class.id }}"
+                                     data-toggle="modal"
+                                     data-target="#subscribe-modal"
+                                     data-title="{{ class.title }}"
+                                     href="javascript:void(0)">
+                                      <i class="fa fa-plus"></i> 加入班级
+                                  </a>
+                              {% endif %}
+                            </div>
+                       </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="subscribe-modal" tabindex="-1" role="dialog" aria-labelledby="subscribe-modal-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="review-form">
+                <div class="card border-0">
+                    <div class="card-body p-0">
+                        <p class="card-text">
+                           <input type="text" class="form-control subscribe-code" placeholder="请输入班级邀请码">
+                        </p>
+                        <button data-cgid="0"
+                                class="card-link btn btn-outline-success float-right subscribe">
+                            提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+
+
+
+
+

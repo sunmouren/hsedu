@@ -34,7 +34,7 @@ var tips = function ($msg, $type, $icon, $from, $align) {
 /**
  * 页面加载等待
  * @param $mode 'show', 'hide'
- * @author yinq
+ * @author sunmouren
  */
 var pageLoader = function ($mode) {
 	var $loadingEl = jQuery('#loader-wrapper');
@@ -234,15 +234,10 @@ $(document).ready(function () {
     $('button.subscribe').click(function () {
         var cgid = $(this).data('cgid');
         var code = $.trim($('input.subscribe-code').val());
-        // var cga = $('a#cg-'+cgid);
-
         if (code === ''){
             tips('签到码不能为空~', 'danger');
             return false;
         }
-
-        // var subscibeCount = parseInt($('span#subscribe-count-'+cgid).text());
-
         $.ajax({
             cache: false,
             type: 'POST',
@@ -252,12 +247,6 @@ $(document).ready(function () {
             success: function (data) {
                 if(data['msg'] === 'ok'){
                     tips('订阅成功, 页面即将刷新~', 'success');
-                    // cga.html('<i class="fa fa-check"></i> 已订阅');
-                    // cga.addClass('text-success');
-                    // cga.data('target', '');
-                    // cga.data('toggle', '');
-                    // $('span#subscribe-count-'+cgid).text(subscibeCount + 1);
-                    // $('div#subscribe-modal').modal('hide');
                     setTimeout(function () {
                         location.reload();
                     }, 1500);
@@ -265,85 +254,6 @@ $(document).ready(function () {
                 } else {
                     tips('订阅失败, 请检查邀请码是否正确~', 'danger');
                     return false;
-                }
-            }
-        });
-    });
-
-    // $('div.class-grade-list').find('a.class-grade-item').click(function () {
-    //     $this = $(this);
-    //     // var login = $this.data('login');
-    //     // if (login === 'unlogin'){
-    //     //     console.log('unlogin');
-    //     //     return false;
-    //     // }
-    //     var classId = $this.data('cgid');
-    //     // var action = $this.data('action');
-    //     var subscibeCount = parseInt($('span#subscribe-count-'+classId).text());
-    //     $.ajax({
-    //         cache: false,
-    //         type: 'POST',
-    //         url: '/course/subscribe/',
-    //         data: {'classId': classId, 'action': action},
-    //         async: true,
-    //         success: function (data) {
-    //             if(data['msg'] === 'ok'){
-    //                 $this.data('action', action === 'subscribe' ? 'unsubscribe' : 'subscribe');
-    //                 if (action === 'subscribe'){
-    //                     $this.html('<i class="fa fa-check"></i> 已订阅');
-    //                     $('span#subscribe-count-'+classId).text(subscibeCount + 1);
-    //                 } else {
-    //                     $this.html('<i class="fa fa-plus"></i> 订阅');
-    //                      $('span#subscribe-count-'+classId).text(subscibeCount - 1);
-    //                 }
-    //             }
-    //         }
-    //     });
-    // });
-
-
-    // 问答模态
-    $('#review-modal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var title = button.data('title');
-        var pid = button.data('pid');
-        var vid = button.data('vid');
-        var modal = $(this);
-        var sendReviewBtn = modal.find('.modal-body button');
-
-        modal.find('.modal-title').text(title);
-        sendReviewBtn.data('pid', pid);
-        sendReviewBtn.data('vid', vid);
-    });
-    $('button.send-review').click(function () {
-        var $this = $(this);
-        var pid = $this.data('pid');
-        var vid = $this.data('vid');
-        var content = $.trim($('textarea.review-content').val());
-
-        if (content === ''){
-            tips('内容不能为空~', 'danger');
-            return false;
-        }
-
-        $.ajax({
-            cache: false,
-            type: 'POST',
-            url: '/comment/add/',
-            data: {'pid': pid, 'vid': vid, 'content': content},
-            async: true,
-            success: function (data) {
-                if (data['msg'] === 'ok'){
-                    var reviewCount = $('span.review-count');
-                    reviewCount.text(parseInt(reviewCount.text()) + 1);
-                    $('div.review-list').prepend(data['cmt']);
-                    $('textarea.review-content').val("");
-                    $('div#review-modal').modal('hide');
-                    $('p.no-review').remove();
-                    tips('发布成功~', 'success');
-                    return true;
-                } else {
-                    tips('发布失败, 请刷新后重试', 'danger');
                 }
             }
         });
@@ -376,124 +286,6 @@ $(document).ready(function () {
         });
     });
 
-     // 订阅者进行签到模态
-    $('#sub-sign-modal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var title = button.data('title');
-        var sid = button.data('sid');
-        var modal = $(this);
-        var submitSignInBtn = modal.find('.modal-body button');
-
-        modal.find('.modal-title').text(title);
-
-        submitSignInBtn.data('sid', sid);
-    });
-    $('button.sub-sign').click(function () {
-        var $this = $(this);
-        var sid = $this.data('sid');
-        var code = $.trim($('input.sub-sign-code').val());
-        if (code === ''){
-            tips('签到码不能为空~', 'danger');
-            return false;
-        }
-        $.ajax({
-            cache: false,
-            type: 'POST',
-            url: '/course/sub/sign/',
-            data: {'sid': sid, 'code': code},
-            async: true,
-            success: function (data) {
-                if(data['msg'] === 'ok'){
-                    tips('签到成功，页面即将刷新~', 'success');
-                    setTimeout(function () {
-                        location.reload();
-                    }, 1500);
-                    return true;
-                } else {
-                    tips('签到失败, 请检查签到码是否正确~', 'danger');
-                    return false;
-                }
-            }
-        });
-    });
-
-    // 改变签到状态
-    $('button.cos-sign').click(function () {
-       var $this = $(this);
-       var sid = $this.data('sid');
-       var action = $this.data('action');
-       $.ajax({
-           cache: false,
-           type: 'POST',
-           url: '/course/cos/sign/',
-           data: {'sid': sid, 'action': action},
-           async: true,
-           success: function (data) {
-               if (data['msg'] === 'ok') {
-                   location.reload();
-                   return true;
-               } else {
-                   tips('哎呀~操作失败了, 请再试一次吧。', 'danger');
-                   return false;
-               }
-           }
-       });
-    });
-    // 添加签到
-    $('button.add-sign').click(function () {
-        var $this = $(this);
-        var cgid = $this.data('cgid');
-        var code = $('input.sign-code').val();
-        if (code === ''){
-            tips('签到码不能为空~', 'danger');
-            return false;
-        }
-        $.ajax({
-            cache: false,
-            type: 'POST',
-            url: '/course/add/sign/',
-            data: {'cgid': cgid, 'code': code},
-            async: true,
-            success: function (data) {
-                if (data['msg'] === 'ok'){
-                    tips('签到成功，页面即将刷新~', 'success');
-                    setTimeout(function () {
-                        location.reload();
-                    }, 1500);
-                } else {
-                    tips('哎呀~操作失败了, 请刷新后再试一次吧。', 'danger');
-                }
-            }
-        });
-    });
-
-    // 提交选择题
-    $('button.sc-submit').click(function () {
-        var $this = $(this);
-        var scid = $this.data('scid');
-        var answer = $('input.sc'+scid+ ':checked').val();
-        if(null === answer){
-            tips('选项不能为空', 'danger');
-            return false;
-        }
-        $.ajax({
-            cache: false,
-            type: 'POST',
-            url: '/test/sub/sc/',
-            data: {'scid': scid, 'answer': answer},
-            async: true,
-            success: function (data) {
-                if(data['msg'] === 'ok'){
-                    tips('提交成功~', 'success');
-                    $('div#singlechoice-'+scid).remove();
-                    return true;
-                }else {
-                    tips('提交出错, 请检查后在试一次吧~', 'danger');
-                }
-            }
-        });
-    });
-
     // 标记未读通知未已读
      $('a.mark-unread').click(function () {
         var nid = $(this).data('nid');
@@ -521,3 +313,149 @@ $(document).ready(function () {
         });
      });
 });
+
+
+// 判断是否为空文本
+function isEmptyText() {
+    for (var i = 0; i < arguments.length; i++){
+        if ($.trim(arguments[i]) === ''){
+            return true;
+        }
+    }
+}
+
+
+// 预览图片
+function imgPreview(id_img, id_preview) {
+    $(id_img).on('change', function (e) {
+    //获取图片资源
+        var file = e.target.files[0];
+        // 只选择图片文件
+        if (!file.type.match('image.*')) {
+            tips('选择文件为图片类型', 'danger');
+            return false;
+        }
+
+        var reader = new FileReader();
+        // 读取文件
+        reader.readAsDataURL(file);
+        // 渲染文件
+        reader.onload = function(arg) {
+            var img = '<img class="img-warp rounded box-shadow" src="' + arg.target.result + '" alt="preview"/>';
+            $(id_preview).empty().append(img);
+        }
+    });
+}
+
+
+// 上传图片到七牛云
+function uploadImage(kargs) {
+    pageLoader('show');
+    var imgUrl;
+    var md5_name = hex_md5(new Date().getTime() + kargs.file.name);
+    var key = 'image/' + kargs.username + '/' + md5_name + '.' + kargs.file.name.split('.')[1];
+    var putExtra = {
+      fname: "",
+      params: {},
+      mimeType: [] || null
+    };
+
+    var config = {
+      useCdnDomain: false,
+      region: null
+    };
+
+    var next = function (res) {
+        // 暂无相关操作, 原本是用来显示加载圈圈的
+    };
+    var error = function (err) {
+        pageLoader('hide');
+    };
+    var complete = function (res) {
+        imgUrl = res.key;
+        kargs.saveUpload(imgUrl);
+    };
+    var observer = {
+        next: next,
+        error: error,
+        complete: complete
+    };
+
+    var observable = qiniu.upload(kargs.file, key, kargs.token, putExtra, config);
+    var subscription = observable.subscribe(observer);
+}
+
+// 上传视频到七牛云
+function uploadVideo(kargs) {
+    pageLoader('show');
+    var vdieoUrl;
+    var md5_name = hex_md5(new Date().getTime() + kargs.file.name);
+    var key = 'video/' + kargs.username + '/' + md5_name + '.' + kargs.file.name.split('.')[1];
+    console.log(key);
+    var putExtra = {
+        fname: "",
+        params: {},
+        mimeType: null
+    };
+    var config = {
+      useCdnDomain: true,
+      retryCount: 6,
+    };
+
+    var next = function (res) {
+        // 暂无相关操作, 原本是用来显示加载圈圈的
+    };
+    var error = function (err) {
+        pageLoader('hide');
+    };
+    var complete = function (res) {
+        vdieoUrl = res.key;
+        kargs.saveUpload(vdieoUrl);
+    };
+    var observer = {
+        next: next,
+        error: error,
+        complete: complete
+    };
+
+    var observable = qiniu.upload(kargs.file, key, kargs.token, putExtra, config);
+    var subscription = observable.subscribe(observer);
+}
+
+
+// 上传视频到七牛云
+function uploadResource(kargs) {
+    pageLoader('show');
+    var resourceUrl;
+    var md5_name = hex_md5(new Date().getTime() + kargs.file.name);
+    var key = 'resource/' + kargs.username + '/' + md5_name + '.' + kargs.file.name.split('.')[1];
+    console.log(key);
+    var putExtra = {
+        fname: "",
+        params: {},
+        mimeType: null
+    };
+    var config = {
+      useCdnDomain: true,
+      retryCount: 6,
+    };
+
+    var next = function (res) {
+        // 暂无相关操作, 原本是用来显示加载圈圈的
+    };
+    var error = function (err) {
+        pageLoader('hide');
+    };
+    var complete = function (res) {
+        resourceUrl = res.key;
+        kargs.saveUpload(resourceUrl);
+    };
+    var observer = {
+        next: next,
+        error: error,
+        complete: complete
+    };
+
+    var observable = qiniu.upload(kargs.file, key, kargs.token, putExtra, config);
+    var subscription = observable.subscribe(observer);
+}

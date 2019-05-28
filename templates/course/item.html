@@ -1,52 +1,26 @@
-{% if sidebar == 'ok' %}
-    {% with course=course %}
-        <div class="course-{{ course.id }} text-truncate">
-            <div id="course-info">
-                <h5 class="">
-                    <a href="{{ course.get_absolute_url }}">
-                        <div class="text-truncate">
-                            <strong>{{ course.title }}</strong>
-                        </div>
-                    </a>
-                </h5>
-                <div class="text-truncate text-muted">
-                    {{ course.overview }}
-                </div>
-            </div>
-            <div id="meta-info" class="mt-1">
-                <small>
-                    <span class="card-link">
-                        <a class="badge badge-light text-red" href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
-                    </span>
-                    <span class="card-link small text-muted">
-                        发布于：{{ course.created }}
-                    </span>
-                </small>
-            </div>
-        </div>
-        <hr>
-    {% endwith %}
-{% else %}
-    {% with course=course %}
-        <div class="course-{{ course.id }}">
-            <div id="user-info" class="d-flex align-items-center">
-                <img class="user-avatar-course rounded" src="{{ course.user.avatar_url }}" alt="avatar">
-                <span class="card-link ml-2">
-                    <a href="{{ course.user.get_absolute_url }}">{{ course.user }}</a>
-                </span>
-                <span class="card-link text-muted">{{ course.created }}</span>
-            </div>
-            <div id="course-info">
-                <h5 class="mt-2">
-                    <a href="{{ course.get_absolute_url }}">
-                       <strong class="text-truncate"> {{ course.title }}</strong>
-                    </a>
-                </h5>
-                <div class="text-truncate text-muted">
-                    {{ course.overview }}
-                </div>
-            </div>
-        </div>
-        <hr>
-    {% endwith %}
-{% endif %}
+<div class="d-flex justify-content-md-start align-items-center">
+    <div>
+        <a href="{{ course.get_absolute_url }}">
+            <img class="img-warp rounded box-shadow" alt="" src="{{ course.img_url }}">
+        </a>
+    </div>
+    <div class="ml-3 text-truncate">
+        <h5>
+            <a href="{{ course.get_absolute_url }}" class="card-link">
+                {{ course.title|truncatechars:25 }}
+            </a>
+        </h5>
+        <h6 class="">
+            {{ course.overview|truncatechars:25 }}
+        </h6>
+        <a href="{{ course.user.get_absolute_url }}" class="card-link badge badge-light text-red">
+            {{ course.user }}
+        </a>
+        <span class="card-link text-muted small">
+            {{ course.view_count }} 浏览量
+        </span>
+        <span class="card-link text-muted small">
+            {{ course.created|timesince }}前发布
+        </span>
+    </div>
+</div>

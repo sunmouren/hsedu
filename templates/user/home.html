@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    个人主页
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="d-flex justify-content-start align-items-center bg-light rounded p-3">
+                <div>
+                    <img class="user-avatar-home rounded-circle" src="{{ user.avatar_url }}" alt="">
+                </div>
+                <div class="ml-3">
+                    <div>
+                        <strong class="card-link">{{ user }}</strong>
+                        {% if request.user == user %}
+                            <a class="card-link badge badge-light text-red" href="{% url 'users:edit-profile' user.id %}">修改信息</a>
+                        {% endif %}
+                    </div>
+                    <span>{{ user.signature }}</span>
+                </div>
+            </div>
+
+            {% if courses.count != 0 %}
+                <h6 class="mt-4">创建的课程:</h6>
+                <div>
+                    {% include 'course/list.html' with courses=courses %}
+                </div>
+            {% endif %}
+
+            {% if subscribed_courses.count %}
+                <h6 class="mt-4">学习的课程:</h6>
+                <div>
+                    {% include 'course/list.html' with courses=subscribed_courses %}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

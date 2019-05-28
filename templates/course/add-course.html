@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    创建课程
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+
+            <div class="form-group">
+                <label for="title" class="col-form-label">课程名</label>
+                <input class="form-control" id="title">
+            </div>
+
+            <div class="form-group">
+                <label for="overview" class="col-form-label">课程概述</label>
+                <textarea class="form-control" rows="5" id="overview"></textarea>
+            </div>
+
+            <div class="form-group">
+                    <label for="img-file" class="col-form-label btn btn-outline-success">上传封面图</label>
+                    <input id="img-file" type="file" style="display:none" accept="image/*">
+            </div>
+            <div id="img-preview">
+            </div>
+
+
+            <button class="btn btn-block btn-info mt-3" id="btn-add">
+                确认创建
+            </button>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'js/qiniu.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/md5.js' %}"></script>
+    <script type="text/javascript">
+        imgPreview('input#img-file', 'div#img-preview');
+        $('button#btn-add').click(function () {
+
+            var title = $('input#title').val();
+            var overview = $('textarea#overview').val();
+            if (isEmptyText(title, overview)){
+                tips('课程名、概述不能为空', 'danger');
+                return false;
+            }
+
+            var file = $("input#img-file")[0].files[0];
+            if (file === null || file === undefined){
+                tips('封面图不能为空', 'danger');
+                return false;
+            }
+
+            var kargs = {
+                'token': '{{ token }}',
+                'username': '{{ username }}',
+                'file': file,
+                'saveUpload': function () {
+                    $.ajax({
+                        cache: false,
+                        type: 'POST',
+                        url: '/course/add/',
+                        data: {'title': title, 'overview': overview, 'imgUrl': arguments[0]},
+                        async: true,
+                        success: function (data) {
+                            pageLoader('hide');
+                            if (data.msg === 'ok'){
+                                tips('提交成功~', 'success');
+                                setTimeout(function () {
+                                    window.location.href = '/course/detail/' + data.id + '/';
+                                }, 1500);
+
+                            }else {
+                                tips('哎呀，提交失败了~，请再试一次吧');
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 1500);
+                            }
+                        }
+                    });
+
+                }
+            };
+            uploadImage(kargs);
+        });
+    </script>
+{% endblock %}

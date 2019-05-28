@@ -1,0 +1,29 @@
+<div class="d-flex justify-content-start align-items-start mt-3">
+    <div >
+        <a href="">
+            <img class="user-avatar rounded-circle" src="{{ comment.user.avatar_url }}" alt="">
+        </a>
+
+    </div>
+    <div class="ml-3">
+        <a class="card-link" href="{{ comment.user.get_absolute_url }}">{{ comment.user }}</a>
+        <span class="card-link">{{ comment.created }}</span>
+
+        <div class="mt-1">
+            {{ comment.content }}
+        </div>
+
+    </div>
+</div>
+
+{% if comment.parent %}
+    <div class="mt-2 ml-5 border border-right-0 border-top-0 border-bottom-0 border-secondary pl-2">
+        <a class="card-link" href="{{ comment.parent.user.get_absolute_url }}">@{{ comment.parent.user }}: </a>
+        {{ comment.parent.content }}
+    </div>
+{% endif %}
+
+<div class="mt-2 ml-5 small">
+    来自: <a class="card-link" href="{{ comment.video.get_absolute_url }}">{{ comment.video }}</a>
+</div>
+<hr>

@@ -24,7 +24,7 @@ def get_user_count():
 
 
 @register.simple_tag
-def get_recent_users(count=8):
+def get_recent_users(count=5):
     """
     获取最近加入的用户
     :param count: 返回数量 默认8

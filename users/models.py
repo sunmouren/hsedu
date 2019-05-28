@@ -25,8 +25,11 @@ class UserProfile(AbstractUser):
         return reverse('users:user-home', args=[self.id])
 
     def get_num_name(self):
-        if self.stu_num and self.stu_name:
-            return '{0} {1}'.format(self.stu_num, self.stu_name)
+
+        if self.stu_num:
+            return self.stu_num
+        elif self.stu_name:
+            return self.stu_name
         return self.username
 
     def __str__(self):
