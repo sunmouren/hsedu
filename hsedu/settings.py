@@ -26,7 +26,6 @@ SECRET_KEY = 'td2#l2#oge_%db@js_+35z7#h=k*dwub+bzaf872r$s1nar(&7'
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost ', '.haishionline.com']
-# ALLOWED_HOSTS = ['192.168.43.35']
 
 
 # Application definition
