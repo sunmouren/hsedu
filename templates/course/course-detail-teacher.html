@@ -52,17 +52,15 @@
                 <a class="btn btn-light text-red " href="{% url 'courses:add-video' course.id %}" role="button">
                     <i class="fa fa-upload"></i> 上传视频
                 </a>
-                <a class="btn btn-light text-red " href="{% url 'live:room-detail' course.id %}" role="button">
-                    <i class="fa fa-video-camera"></i> 发起直播
+                <a class="btn btn-light text-red" href="{% url 'courses:add-class' course.id %}" role="button">
+                  <i class="fa fa-graduation-cap "></i> 创建班级
                 </a>
                 <a class="btn btn-light  text-info " href="{% url 'courses:add-course-resource' course.id %}" role="button">
                     <i class="fa fa-file"></i> 添加资源
                 </a>
-                <a class="btn btn-light text-info" href="{% url 'courses:add-class' course.id %}" role="button">
-                  <i class="fa fa-graduation-cap "></i> 创建班级
+                <a class="btn btn-light text-info" href="#" role="button">
+                    <i class="fa fa-file"></i> 导入习题
                 </a>
-
-
 
 
             </div>

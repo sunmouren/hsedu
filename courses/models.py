@@ -114,7 +114,7 @@ class VideoWatchProgress(models.Model):
 
 class ClassWork(models.Model):
     """
-    班级作业表
+    班级作业
     """
     title = models.CharField(max_length=64)
     course_class = models.ForeignKey('CourseClass', on_delete=models.CASCADE)
@@ -127,15 +127,12 @@ class ClassWork(models.Model):
 
 class WorkItem(models.Model):
     """
-    学生作业表
+    学生作业
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    class_work = models.ForeignKey('ClassWork', on_delete=models.CASCADE)
     resources = GenericRelation(Resources)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user
-
-
-
-

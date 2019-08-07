@@ -16,5 +16,7 @@ urlpatterns = [
     path('comment/', include('comments.urls', namespace='comments')),
     # live
     path('live/', include('live.urls', namespace='live')),
+    # api
+    path('api/course/', include('courses.api.urls', namespace='api-course'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

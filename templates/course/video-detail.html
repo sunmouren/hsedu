@@ -13,6 +13,15 @@
     <div class="row mb-5">
         <div class="col-md-10 offset-md-1 ">
 
+
+
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a class="card-link" href="{{ video.course.get_absolute_url }}">{{ video.course }}</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">视频详情</li>
+              </ol>
+            </nav>
+
             {% if vwp is not None and vwp != 100 %}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <strong>友情提示:</strong> 观看记录暂时采用单位分钟间断统计, 请观看时间久一点。
@@ -22,11 +31,10 @@
                 </div>
             {% endif %}
 
+
             <div class="p-3 mb-3 bg-light rounded">
-                <h4 class=""><a class="card-link" href="{{ video.course.get_absolute_url }}">{{ video.course }}</a> / {{ video.title }}</h4>
+                <h4 class="text-muted">{{ video.title }}</h4>
                 <h6 class="text-muted">{{ video.overview}}</h6>
-
-
                 {% if vwp is not None %}
                     <span class="card-link text-red">视频学习进度: <span id="vwp">{{ vwp }}</span>%</span>
                 {% endif %}

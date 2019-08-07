@@ -72,8 +72,11 @@ class AddLike(LoginRequiredMixin, View):
 class CommentNotificationList(LoginRequiredMixin, View):
     def get(self, request):
         current_page = 'notice'
-        # 将未读消息跟新为已读
-        CommentNotification.objects.select_for_update().filter(receiver=request.user, is_read=False).update(is_read=True)
+        # 将未读消息更新为已读
+        CommentNotification.objects.\
+            select_for_update().\
+            filter(receiver=request.user, is_read=False).\
+            update(is_read=True)
 
         notification_list = CommentNotification.objects.filter(receiver=request.user)
 

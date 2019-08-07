@@ -189,7 +189,7 @@ class AddCourse(LoginRequiredMixin, View):
             if is_pass:
                 try:
                     new_course = Course(title=title, overview=overview)
-                    new_course.img_url = settings.DOMAIN + img_url + '?imageView2/1/w/156/h/100/q/75'
+                    new_course.img_url = settings.DOMAIN + img_url
                     new_course.user = request.user
                     new_course.save()
                     return JsonResponse({'msg': 'ok', 'id': new_course.id})
@@ -314,5 +314,8 @@ def course_search(request):
         'query': query,
         'results': results,
     })
+
+
+
 
 
